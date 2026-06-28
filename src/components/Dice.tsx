@@ -42,9 +42,9 @@ const VALUE_TO_FACE: Record<number, number> = {
   6: 2,   // back
 };
 
-function DiceFace({ value, colorHex }: { value: number; colorHex: string }) {
+function DiceFace({ value, colorHex, compact }: { value: number; colorHex: string; compact: boolean }) {
   const pips = PIPS[value] || [];
-  const size = 10;
+  const size = compact ? 7.5 : 10.5;
 
   return (
     <div style={{
@@ -52,9 +52,9 @@ function DiceFace({ value, colorHex }: { value: number; colorHex: string }) {
       display: 'grid',
       gridTemplateColumns: 'repeat(3, 1fr)',
       gridTemplateRows: 'repeat(3, 1fr)',
-      padding: '14%',
+      padding: '12%',
       boxSizing: 'border-box',
-      gap: '4%',
+      gap: '3%',
     }}>
       {Array.from({ length: 9 }).map((_, i) => {
         const pos = i + 1;
@@ -70,7 +70,7 @@ function DiceFace({ value, colorHex }: { value: number; colorHex: string }) {
                 width: `${size}px`, height: `${size}px`,
                 borderRadius: '50%',
                 background: `radial-gradient(circle at 35% 30%, #fff 0%, ${colorHex} 80%)`,
-                boxShadow: `0 1px 3px rgba(0,0,0,0.5), 0 0 6px ${colorHex}88`,
+                boxShadow: `0 1px 3px rgba(0,0,0,0.5), 0 0 5px ${colorHex}aa`,
               }} />
             )}
           </div>
@@ -106,7 +106,6 @@ export default function Dice({ onRoll, compact = false }: DiceProps = {}) {
   const [rotation, setRotation] = useState({ x: -20, y: 30 });
   const rotationRef = useRef({ x: -20, y: 30 });
   const [isAnimating, setIsAnimating] = useState(false);
-  const animRef = useRef<number | null>(null);
   const prevIsRolling = useRef(false);
 
   // Keep ref in sync with state
@@ -119,10 +118,10 @@ export default function Dice({ onRoll, compact = false }: DiceProps = {}) {
   useEffect(() => {
     if (isRolling && !prevIsRolling.current) {
       setIsAnimating(true);
-      // 2+ full 3D spins in random direction
+      // Random fast spin
       const cur = rotationRef.current;
-      const spinX = cur.x - 720 - Math.random() * 360;
-      const spinY = cur.y + 720 + Math.random() * 360;
+      const spinX = cur.x - 720 - Math.random() * 540;
+      const spinY = cur.y + 720 + Math.random() * 540;
       updateRotation({ x: spinX, y: spinY });
     }
 
@@ -134,27 +133,25 @@ export default function Dice({ onRoll, compact = false }: DiceProps = {}) {
       // Nearest full-rotation base so the die doesn't jump backwards
       const baseX = Math.round(cur.x / 360) * 360;
       const baseY = Math.round(cur.y / 360) * 360;
-      setTimeout(() => {
-        updateRotation({ x: baseX + target.x, y: baseY + target.y });
+      
+      // Synchronously update rotation to ensure seamless transition
+      updateRotation({ x: baseX + target.x, y: baseY + target.y });
+      
+      // Mark animation complete after transition ends (400ms)
+      const timer = setTimeout(() => {
         setIsAnimating(false);
-      }, 80);
+      }, 400);
+      return () => clearTimeout(timer);
     }
 
     prevIsRolling.current = isRolling;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRolling, diceValue]);
 
-  const size = compact ? 64 : 80;
+  const size = compact ? 48 : 68;
   const faceSize = size;
 
-  // Clean up on unmount
-  useEffect(() => {
-    return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-    };
-  }, []);
-
-  const faceStyle = (transform: string, faceValue: number): React.CSSProperties => ({
+  const faceStyle = (transform: string): React.CSSProperties => ({
     position: 'absolute',
     width: `${faceSize}px`,
     height: `${faceSize}px`,
@@ -162,11 +159,11 @@ export default function Dice({ onRoll, compact = false }: DiceProps = {}) {
       ? `linear-gradient(145deg, rgba(20,30,50,0.97), rgba(10,18,35,0.99))`
       : `linear-gradient(145deg, rgba(15,23,42,0.98), rgba(8,14,28,0.99))`,
     border: `2px solid ${isRolling || isAnimating ? 'rgba(255,255,255,0.15)' : activeColorHex}`,
-    borderRadius: compact ? '12px' : '16px',
+    borderRadius: compact ? '10px' : '14px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: `inset 0 2px 8px rgba(255,255,255,0.07), inset 0 -2px 6px rgba(0,0,0,0.5)`,
+    boxShadow: `inset 0 2px 6px rgba(255,255,255,0.08), inset 0 -2px 5px rgba(0,0,0,0.55)`,
     transform,
     backfaceVisibility: 'visible',
     overflow: 'hidden',
@@ -179,7 +176,7 @@ export default function Dice({ onRoll, compact = false }: DiceProps = {}) {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      gap: compact ? '6px' : '10px',
+      gap: compact ? '5px' : '10px',
       width: compact ? 'auto' : '100%',
     }}>
       {/* 3D Dice Scene */}
@@ -190,7 +187,7 @@ export default function Dice({ onRoll, compact = false }: DiceProps = {}) {
           height: `${size}px`,
           perspective: `${size * 4}px`,
           cursor: canRoll ? 'pointer' : 'default',
-          filter: (!canRoll && !isRolling) ? 'brightness(0.6)' : 'none',
+          filter: (!canRoll && !isRolling) ? 'brightness(0.65)' : 'none',
           transition: 'filter 0.3s ease',
         }}
         aria-label={canRoll ? 'Roll dice' : 'Waiting'}
@@ -201,9 +198,9 @@ export default function Dice({ onRoll, compact = false }: DiceProps = {}) {
             position: 'absolute',
             width: `${size}px`,
             height: `${size}px`,
-            borderRadius: compact ? '16px' : '20px',
+            borderRadius: compact ? '12px' : '16px',
             background: 'transparent',
-            boxShadow: `0 0 ${isRolling ? '28px' : '18px'} ${activeColorHex}${isRolling ? '88' : '44'}`,
+            boxShadow: `0 0 ${isRolling ? '24px' : '16px'} ${activeColorHex}${isRolling ? '88' : '44'}`,
             pointerEvents: 'none',
             transition: 'box-shadow 0.3s ease',
             zIndex: -1,
@@ -217,34 +214,35 @@ export default function Dice({ onRoll, compact = false }: DiceProps = {}) {
             position: 'relative',
             transformStyle: 'preserve-3d',
             transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-            transition: isAnimating
-              ? `transform ${isRolling ? '0.4s' : '0.6s'} cubic-bezier(0.25, 0.46, 0.45, 0.94)`
-              : 'transform 0.55s cubic-bezier(0.16, 1, 0.3, 1)',
+            // Linear tumble for continuous spin, elastic backout for bouncy settle
+            transition: isRolling
+              ? 'transform 0.6s linear'
+              : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.18)',
           }}
         >
           {/* Front  = 1 */}
-          <div style={faceStyle(`translateZ(${half}px)`, 1)}>
-            <DiceFace value={1} colorHex={activeColorHex} />
+          <div style={faceStyle(`translateZ(${half}px)`)}>
+            <DiceFace value={1} colorHex={activeColorHex} compact={compact} />
           </div>
           {/* Back   = 6 */}
-          <div style={faceStyle(`rotateY(180deg) translateZ(${half}px)`, 6)}>
-            <DiceFace value={6} colorHex={activeColorHex} />
+          <div style={faceStyle(`rotateY(180deg) translateZ(${half}px)`)}>
+            <DiceFace value={6} colorHex={activeColorHex} compact={compact} />
           </div>
           {/* Right  = 2 */}
-          <div style={faceStyle(`rotateY(90deg) translateZ(${half}px)`, 2)}>
-            <DiceFace value={2} colorHex={activeColorHex} />
+          <div style={faceStyle(`rotateY(90deg) translateZ(${half}px)`)}>
+            <DiceFace value={2} colorHex={activeColorHex} compact={compact} />
           </div>
           {/* Left   = 5 */}
-          <div style={faceStyle(`rotateY(-90deg) translateZ(${half}px)`, 5)}>
-            <DiceFace value={5} colorHex={activeColorHex} />
+          <div style={faceStyle(`rotateY(-90deg) translateZ(${half}px)`)}>
+            <DiceFace value={5} colorHex={activeColorHex} compact={compact} />
           </div>
           {/* Top    = 3 */}
-          <div style={faceStyle(`rotateX(90deg) translateZ(${half}px)`, 3)}>
-            <DiceFace value={3} colorHex={activeColorHex} />
+          <div style={faceStyle(`rotateX(90deg) translateZ(${half}px)`)}>
+            <DiceFace value={3} colorHex={activeColorHex} compact={compact} />
           </div>
           {/* Bottom = 4 */}
-          <div style={faceStyle(`rotateX(-90deg) translateZ(${half}px)`, 4)}>
-            <DiceFace value={4} colorHex={activeColorHex} />
+          <div style={faceStyle(`rotateX(-90deg) translateZ(${half}px)`)}>
+            <DiceFace value={4} colorHex={activeColorHex} compact={compact} />
           </div>
         </div>
       </div>
@@ -252,14 +250,14 @@ export default function Dice({ onRoll, compact = false }: DiceProps = {}) {
       {/* Roll label — only in non-compact, canRoll state */}
       {canRoll && !compact && (
         <span style={{
-          fontSize: '10px',
+          fontSize: '9px',
           fontFamily: "'Chakra Petch', monospace",
           color: activeColorHex,
           fontWeight: 800,
           textTransform: 'uppercase',
           letterSpacing: '1.5px',
           animation: 'pulse 1.5s infinite',
-          textShadow: `0 0 10px ${activeColorHex}44`,
+          textShadow: `0 0 8px ${activeColorHex}44`,
         }}>
           Tap to Roll
         </span>
