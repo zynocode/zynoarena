@@ -228,20 +228,28 @@ export default class MainScene extends Phaser.Scene {
         // We shift the container position so its center (16,16) aligns exactly on grid pixel
         const container = this.add.container(pixel.x - 16, pixel.y - 16);
 
-        const shadow = this.add.circle(18, 18, 14, 0x000000, 0.45);
+        const shadow = this.add.circle(18, 19, 14, 0x000000, 0.45);
         
-        // Outer ring (Solid Player Color with White outline)
-        const outer = this.add.circle(16, 16, 14, colorHex, 1);
-        outer.setStrokeStyle(2, 0xffffff, 1.0);
+        // 3D Bevel base (darker hue shifted slightly down)
+        const bevelColor = this.getDarkerColorHex(player.color);
+        const bevel = this.add.circle(16, 17.5, 14, bevelColor, 1);
         
-        // Inner white ring (gives the goti a beautiful physical border look)
-        const innerRing = this.add.circle(16, 16, 9, 0xffffff, 1.0);
-        innerRing.setStrokeStyle(1.5, colorHex, 1.0);
+        // Premium 3D Cap (main player color with thin white stroke)
+        const cap = this.add.circle(16, 16, 14, colorHex, 1);
+        cap.setStrokeStyle(1.5, 0xffffff, 1.0);
+        
+        // Inner 3D Ridge (semi-translucent white overlay ring)
+        const innerRing = this.add.circle(16, 16, 9.5, 0xffffff, 0.3);
+        innerRing.setStrokeStyle(1, 0xffffff, 0.5);
 
-        // Core dot (Solid Player Color in the very center)
-        const core = this.add.circle(16, 16, 4.5, colorHex, 1.0);
+        // Core dome in the center
+        const core = this.add.circle(16, 16, 5, colorHex, 1.0);
+        core.setStrokeStyle(1, bevelColor, 1.0);
 
-        container.add([shadow, outer, innerRing, core]);
+        // Specular highlight gloss (light source reflection)
+        const gloss = this.add.circle(11, 11, 2.5, 0xffffff, 0.7);
+
+        container.add([shadow, bevel, cap, innerRing, core, gloss]);
         container.setSize(32, 32);
 
         // Click interaction binding - using default 32x32 rectangle centered on goti
@@ -526,6 +534,16 @@ export default class MainScene extends Phaser.Scene {
       case 'yellow': return 0xeab308;
       case 'blue': return 0x3b82f6;
       default: return 0xffffff;
+    }
+  }
+
+  private getDarkerColorHex(color: string): number {
+    switch (color) {
+      case 'red': return 0x991b1b;
+      case 'green': return 0x166534;
+      case 'yellow': return 0x854d0e;
+      case 'blue': return 0x1e40af;
+      default: return 0xcccccc;
     }
   }
 }

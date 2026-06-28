@@ -56,7 +56,6 @@ export default function App() {
     activePlayerIndex, 
     gameStatus, 
     diceValue, 
-    consecutiveSixes, 
     winner, 
     mute, 
     toggleMute, 
@@ -64,8 +63,7 @@ export default function App() {
     rollDice, 
     selectToken,
     lastActionNotice,
-    lastMatchConfig,
-    actionLogs
+    lastMatchConfig
   } = useGameStore();
 
   const gameRef = useRef<Phaser.Game | null>(null);
@@ -164,6 +162,91 @@ export default function App() {
     setActiveGame('ARENA');
   };
 
+  const renderPlayerProfile = (color: 'red' | 'green' | 'yellow' | 'blue', position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right') => {
+    const p = players.find(player => player.color === color);
+    if (!p) return null;
+
+    const cs = colorStyle(color);
+    const home = p.tokens.filter(t => t === 56).length;
+    const isActive = players[activePlayerIndex]?.id === p.id;
+
+    // Position styles
+    const posStyles: Record<string, React.CSSProperties> = {
+      'top-left': { position: 'absolute', top: '-75px', left: '-10px', display: 'flex', alignItems: 'center', gap: '8px' },
+      'top-right': { position: 'absolute', top: '-75px', right: '-10px', display: 'flex', flexDirection: 'row-reverse', alignItems: 'center', gap: '8px' },
+      'bottom-left': { position: 'absolute', bottom: '-75px', left: '-10px', display: 'flex', alignItems: 'center', gap: '8px' },
+      'bottom-right': { position: 'absolute', bottom: '-75px', right: '-10px', display: 'flex', flexDirection: 'row-reverse', alignItems: 'center', gap: '8px' },
+    };
+
+    return (
+      <div style={posStyles[position]} className={`player-profile-overlay ${isActive ? 'active' : ''}`}>
+        {/* Active turn indicator: dice */}
+        {isActive && (
+          <div style={{
+            position: 'absolute',
+            top: position.startsWith('top') ? '55px' : '-85px',
+            left: position.endsWith('left') ? '0' : 'auto',
+            right: position.endsWith('right') ? '0' : 'auto',
+            zIndex: 100
+          }}>
+            <Dice onRoll={handleRollDice} />
+          </div>
+        )}
+
+        {/* Avatar Circle */}
+        <div
+          className={`player-avatar-circle ${isActive ? 'active' : ''}`}
+          style={{
+            '--player-color': cs.border,
+            '--player-glow': cs.bg,
+          } as React.CSSProperties}
+        >
+          <span className="player-avatar-icon">
+            {p.isHuman ? '👤' : '🤖'}
+          </span>
+        </div>
+
+        {/* Info Box */}
+        <div
+          className={`player-details-card ${isActive ? 'active' : ''}`}
+          style={{
+            '--player-color': cs.border,
+            '--player-glow': cs.bg,
+          } as React.CSSProperties}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span className={`player-name-text ${isActive ? 'active' : ''}`}>{p.name}</span>
+            {!p.isHuman && p.difficulty && (
+              <span style={{ fontSize: '8px', fontWeight: 800, padding: '1px 3px', borderRadius: '3px', backgroundColor: 'rgba(255,255,255,0.08)', color: cs.text }}>
+                {p.difficulty.substring(0, 3).toUpperCase()}
+              </span>
+            )}
+          </div>
+
+          {/* 4 progress dots */}
+          <div style={{ display: 'flex', gap: '3px', marginTop: '2px' }}>
+            {Array.from({ length: 4 }).map((_, idx) => {
+              const isHome = idx < home;
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: isHome ? cs.border : 'rgba(255,255,255,0.05)',
+                    border: `1px solid ${isHome ? cs.border : 'rgba(255,255,255,0.1)'}`,
+                    boxShadow: isHome ? `0 0 5px ${cs.border}` : 'none',
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div style={{ position: 'relative', width: '100%', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 
@@ -186,56 +269,77 @@ export default function App() {
 
           {/* PLAYING */}
           {currentScreen === 'PLAYING' && (
-            <div className="game-layout">
-
-              {/* Board Column */}
-              <div className="game-board-col">
-
-                {/* HUD Bar */}
-                <div className="glass-panel game-hud">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      width: '12px', height: '12px', borderRadius: '50%',
-                      backgroundColor: colorStyle(activePlayer?.color ?? 'blue').border,
-                      animation: 'shimmer 2s ease-in-out infinite',
-                      color: colorStyle(activePlayer?.color ?? 'blue').border,
-                    }} />
-                    <span style={{ fontWeight: 700, fontSize: '14px' }}>{activePlayer?.name}'s Turn</span>
-                    <span style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      {gameStatus.replace(/_/g, ' ')}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    <button onClick={toggleMute} title={mute ? 'Unmute' : 'Mute'}
-                      style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', padding: '7px', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center' }}>
-                      {mute ? <VolumeX size={15} /> : <Volume2 size={15} />}
-                    </button>
-                    <button onClick={handleBackToArena} title="Exit to Arena"
-                      style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', padding: '7px', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600 }}>
-                      <ArrowLeft size={14} /> Exit
-                    </button>
-                  </div>
+            <div className="ludo-game-container">
+              
+              {/* Floating Pill HUD Bar */}
+              <div className="glass-panel game-hud" style={{
+                position: 'fixed',
+                top: '20px',
+                zIndex: 200,
+                width: 'auto',
+                minWidth: '280px',
+                padding: '8px 18px',
+                borderRadius: '100px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '24px',
+                border: '1px solid rgba(255,255,255,0.08)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    width: '10px', height: '10px', borderRadius: '50%',
+                    backgroundColor: colorStyle(activePlayer?.color ?? 'blue').border,
+                    boxShadow: `0 0 10px ${colorStyle(activePlayer?.color ?? 'blue').border}`,
+                    animation: 'pulse 1.2s infinite'
+                  }} />
+                  <span style={{ fontWeight: 800, fontSize: '13px', color: '#fff', letterSpacing: '-0.2px' }}>
+                    {activePlayer?.name}'s Turn
+                  </span>
                 </div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <button onClick={toggleMute} title={mute ? 'Unmute' : 'Mute'}
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '50%', width: '28px', height: '28px', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                    {mute ? <VolumeX size={13} /> : <Volume2 size={13} />}
+                  </button>
+                  <button onClick={handleBackToArena} title="Exit to Arena"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '100px', padding: '4px 12px', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, transition: 'all 0.2s' }}>
+                    <ArrowLeft size={12} /> Exit
+                  </button>
+                </div>
+              </div>
+
+              {/* Board Wrapper with Corner Overlays */}
+              <div className="ludo-board-wrapper">
+                
+                {/* Corner Player Overlays */}
+                {renderPlayerProfile('red', 'top-left')}
+                {renderPlayerProfile('green', 'top-right')}
+                {renderPlayerProfile('blue', 'bottom-left')}
+                {renderPlayerProfile('yellow', 'bottom-right')}
 
                 {/* Phaser Canvas */}
                 <div id="game-container" className="game-canvas-wrap" />
 
-                {/* Event Banner */}
+                {/* Event Banner Overlay (Centered on Ludo Board) */}
                 {lastActionNotice !== 'NONE' && (
                   <div className="glass-panel" style={{
                     position: 'absolute',
-                    top: '80px',
-                    padding: '14px 28px',
-                    borderRadius: '14px',
-                    zIndex: 100,
-                    fontSize: '16px',
-                    fontWeight: 700,
-                    border: `1px solid ${lastActionNotice === 'SIX_EXTRA' ? '#22c55e' : '#ef4444'}`,
+                    padding: '12px 24px',
+                    borderRadius: '16px',
+                    zIndex: 150,
+                    fontSize: '15px',
+                    fontWeight: 800,
+                    border: `1.5px solid ${lastActionNotice === 'SIX_EXTRA' ? '#22c55e' : '#ef4444'}`,
                     backgroundColor: 'rgba(2,6,23,0.92)',
                     color: lastActionNotice === 'SIX_EXTRA' ? '#86efac' : lastActionNotice === 'THREE_SIXES' ? '#fca5a5' : '#fcd34d',
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
                     animation: 'bannerIn 0.3s ease forwards',
                     pointerEvents: 'none',
+                    textAlign: 'center',
+                    maxWidth: '85%'
                   }}>
                     {lastActionNotice === 'CAPTURE'      && `⚔️  ${activePlayer?.name} Captured an Opponent!`}
                     {lastActionNotice === 'SIX_EXTRA'    && `🎲  Extra Roll Granted!`}
@@ -243,65 +347,6 @@ export default function App() {
                     {lastActionNotice === 'NO_MOVES'     && `💤  No Valid Moves — Passing Turn.`}
                   </div>
                 )}
-              </div>
-
-              {/* Control Deck */}
-              <div className="glass-panel control-deck">
-                <h3 style={{ margin: 0, fontSize: '14px', color: '#94a3b8', fontWeight: 600, textAlign: 'center' }}>Control Deck</h3>
-
-                <Dice onRoll={handleRollDice} />
-
-                <div style={{ width: '100%', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '14px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>
-                    Last Roll: <strong style={{ color: '#fff', fontSize: '18px' }}>{diceValue}</strong>
-                  </div>
-                  {consecutiveSixes > 0 && (
-                    <div style={{ fontSize: '11px', color: '#f59e0b', fontWeight: 600, animation: 'pulse 1.2s infinite', marginTop: '4px' }}>
-                      ⚠️ {consecutiveSixes} / 3 Sixes
-                    </div>
-                  )}
-                  {gameStatus === 'WAITING_FOR_MOVE' && activePlayer?.isHuman && (
-                    <div style={{ fontSize: '12px', color: '#60a5fa', marginTop: '8px', fontWeight: 500, animation: 'pulse 1.5s infinite' }}>
-                      ✨ Select a highlighted token
-                    </div>
-                  )}
-                </div>
-
-                {/* Mini player status */}
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
-                  {players.map((p) => {
-                    const cs = colorStyle(p.color);
-                    const home = p.tokens.filter(t => t === 56).length;
-                    const isActive = players[activePlayerIndex]?.id === p.id;
-                    return (
-                      <div key={p.id} style={{
-                        display: 'flex', alignItems: 'center', gap: '8px',
-                        padding: '6px 10px', borderRadius: '8px',
-                        background: isActive ? cs.bg : 'transparent',
-                        border: `1px solid ${isActive ? cs.border : 'transparent'}`,
-                        transition: 'all 0.3s ease',
-                      }}>
-                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: cs.border, flexShrink: 0 }} />
-                        <span style={{ fontSize: '11px', fontWeight: 600, flex: 1, color: isActive ? cs.text : '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</span>
-                        <span style={{ fontSize: '11px', color: '#94a3b8' }}>🏠 {home}/4</span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Match Logs Feed Console */}
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <div style={{ fontSize: '10px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'left' }}>Match Activity</div>
-                  <div className="log-console">
-                    {actionLogs.length === 0 ? (
-                      <div className="log-item" style={{ color: '#475569', fontStyle: 'italic' }}>No activity logged yet...</div>
-                    ) : (
-                      actionLogs.map((log, i) => (
-                        <div key={i} className="log-item">{log}</div>
-                      ))
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
           )}
