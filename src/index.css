@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -22,9 +22,9 @@
   --ludo-yellow: #eab308;
   --ludo-blue: #3b82f6;
 
-  /* Responsive board sizing — full viewport centered, no sidebar */
-  --board-size: clamp(300px, min(85vmin, calc(100vmin - 200px)), 600px);
-  --hud-width: clamp(300px, min(85vmin, calc(100vmin - 200px)), 600px);
+  /* Responsive board sizing — used in 4P grid & standalone */
+  --board-size: clamp(260px, min(70vmin, 52vh), 560px);
+  --hud-width: clamp(260px, min(70vmin, 52vh), 560px);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -1157,9 +1157,9 @@ h1, h2, h3, h4 {
   color: #fff;
 }
 
-/* In full-bleed playing mode the board uses the full min(vw,vh) minus HUD + corner overlay margins */
+/* In full-bleed playing mode: board smaller to fit player panels above/below */
 .playing-full-bleed {
-  --board-size: clamp(280px, min(80vmin, calc(100vmin - 250px)), 580px);
+  --board-size: clamp(240px, min(68vmin, 48vh), 520px);
 }
 
 @media (max-width: 480px) {

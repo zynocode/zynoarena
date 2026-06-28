@@ -228,28 +228,36 @@ export default class MainScene extends Phaser.Scene {
         // We shift the container position so its center (16,16) aligns exactly on grid pixel
         const container = this.add.container(pixel.x - 16, pixel.y - 16);
 
-        const shadow = this.add.circle(18, 19, 14, 0x000000, 0.45);
-        
-        // 3D Bevel base (darker hue shifted slightly down)
         const bevelColor = this.getDarkerColorHex(player.color);
-        const bevel = this.add.circle(16, 17.5, 14, bevelColor, 1);
-        
-        // Premium 3D Cap (main player color with thin white stroke)
-        const cap = this.add.circle(16, 16, 14, colorHex, 1);
-        cap.setStrokeStyle(1.5, 0xffffff, 1.0);
-        
-        // Inner 3D Ridge (semi-translucent white overlay ring)
-        const innerRing = this.add.circle(16, 16, 9.5, 0xffffff, 0.3);
-        innerRing.setStrokeStyle(1, 0xffffff, 0.5);
+        const litColor   = this.getLighterColorHex(player.color);
 
-        // Core dome in the center
-        const core = this.add.circle(16, 16, 5, colorHex, 1.0);
-        core.setStrokeStyle(1, bevelColor, 1.0);
+        // Layer 1: Blurred soft drop shadow (offset down-right)
+        const shadow = this.add.circle(19, 21, 13, 0x000000, 0.5);
 
-        // Specular highlight gloss (light source reflection)
-        const gloss = this.add.circle(11, 11, 2.5, 0xffffff, 0.7);
+        // Layer 2: Cylinder bottom edge — gives physical height/depth illusion
+        const cylinderBase = this.add.circle(16, 19, 14, bevelColor, 1.0);
 
-        container.add([shadow, bevel, cap, innerRing, core, gloss]);
+        // Layer 3: Main dome cap — bright player color
+        const cap = this.add.circle(16, 15.5, 14, colorHex, 1);
+        cap.setStrokeStyle(1.5, bevelColor, 0.8);
+
+        // Layer 4: Edge rim highlight — faint light ring around the dome perimeter
+        const rim = this.add.circle(16, 15.5, 13.5, 0xffffff, 0);
+        rim.setStrokeStyle(2, 0xffffff, 0.18);
+
+        // Layer 5: Mid-dome convex sheen — lighter gradient center circle
+        const midDome = this.add.circle(16, 14.5, 8.5, litColor, 0.45);
+
+        // Layer 6: Core center recessed circle (adds depth)
+        const core = this.add.circle(16, 15, 4.5, bevelColor, 0.55);
+
+        // Layer 7: Primary specular glint — sharp white dot top-left (simulates light source)
+        const gloss1 = this.add.circle(10.5, 9.5, 3.5, 0xffffff, 0.75);
+
+        // Layer 8: Secondary soft glint — dim crescent bottom for bounce light
+        const gloss2 = this.add.circle(19, 20, 2, 0xffffff, 0.12);
+
+        container.add([shadow, cylinderBase, cap, rim, midDome, core, gloss1, gloss2]);
         container.setSize(32, 32);
 
         // Click interaction binding - using default 32x32 rectangle centered on goti
@@ -544,6 +552,16 @@ export default class MainScene extends Phaser.Scene {
       case 'yellow': return 0x854d0e;
       case 'blue': return 0x1e40af;
       default: return 0xcccccc;
+    }
+  }
+
+  private getLighterColorHex(color: string): number {
+    switch (color) {
+      case 'red': return 0xfca5a5;    // red-300
+      case 'green': return 0x86efac;  // green-300
+      case 'yellow': return 0xfde047; // yellow-300
+      case 'blue': return 0x93c5fd;   // blue-300
+      default: return 0xffffff;
     }
   }
 }
