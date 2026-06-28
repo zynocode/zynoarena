@@ -42,6 +42,12 @@ export default class MainScene extends Phaser.Scene {
       this.initTokens(state.players);
     }
 
+    // Rotate board 180 degrees if human player is Red or Green so their base is at the bottom
+    const humanPlayer = state.players.find(p => p.isHuman);
+    if (humanPlayer && (humanPlayer.color === 'red' || humanPlayer.color === 'green')) {
+      this.cameras.main.setRotation(Math.PI);
+    }
+
     // 6. Subscribe to Zustand store changes
     this.unsubscribeStore = useGameStore.subscribe((newState) => {
       this.syncTokens(newState.players);
@@ -220,43 +226,43 @@ export default class MainScene extends Phaser.Scene {
         const gridCoord = getTokenGridCoordinates(colorIdx, position, tokenIdx);
         const pixel = gridToPixel(gridCoord);
 
-        // We shift the container position so its center (16,16) aligns exactly on grid pixel
-        const container = this.add.container(pixel.x - 16, pixel.y - 16);
+        // Create container exactly centered on the target pixel coordinate
+        const container = this.add.container(pixel.x, pixel.y);
 
         const bevelColor = this.getDarkerColorHex(player.color);
         const litColor   = this.getLighterColorHex(player.color);
 
         // Layer 1: Blurred soft drop shadow (offset down-right)
-        const shadow = this.add.circle(19, 21, 13, 0x000000, 0.5);
+        const shadow = this.add.circle(3, 5, 15, 0x000000, 0.45);
 
-        // Layer 2: Cylinder bottom edge — gives physical height/depth illusion
-        const cylinderBase = this.add.circle(16, 19, 14, bevelColor, 1.0);
+        // Layer 2: Cylinder bottom edge — gives physical height/depth
+        const cylinderBase = this.add.circle(0, 3, 16.5, bevelColor, 1.0);
 
-        // Layer 3: Main dome cap — bright player color
-        const cap = this.add.circle(16, 15.5, 14, colorHex, 1);
-        cap.setStrokeStyle(1.5, bevelColor, 0.8);
+        // Layer 3: Main dome cap — larger player color circle
+        const cap = this.add.circle(0, -0.5, 16.5, colorHex, 1);
+        cap.setStrokeStyle(1.5, bevelColor, 0.85);
 
-        // Layer 4: Edge rim highlight — faint light ring around the dome perimeter
-        const rim = this.add.circle(16, 15.5, 13.5, 0xffffff, 0);
-        rim.setStrokeStyle(2, 0xffffff, 0.18);
+        // Layer 4: Edge rim highlight — faint light ring
+        const rim = this.add.circle(0, -0.5, 16, 0xffffff, 0);
+        rim.setStrokeStyle(2, 0xffffff, 0.22);
 
-        // Layer 5: Mid-dome convex sheen — lighter gradient center circle
-        const midDome = this.add.circle(16, 14.5, 8.5, litColor, 0.45);
+        // Layer 5: Mid-dome convex sheen — lighter gradient
+        const midDome = this.add.circle(0, -1.5, 10.5, litColor, 0.48);
 
         // Layer 6: Core center recessed circle (adds depth)
-        const core = this.add.circle(16, 15, 4.5, bevelColor, 0.55);
+        const core = this.add.circle(0, -1, 5, bevelColor, 0.55);
 
-        // Layer 7: Primary specular glint — sharp white dot top-left (simulates light source)
-        const gloss1 = this.add.circle(10.5, 9.5, 3.5, 0xffffff, 0.75);
+        // Layer 7: Primary specular glint — sharp white dot top-left
+        const gloss1 = this.add.circle(-5.5, -6.5, 4, 0xffffff, 0.8);
 
-        // Layer 8: Secondary soft glint — dim crescent bottom for bounce light
-        const gloss2 = this.add.circle(19, 20, 2, 0xffffff, 0.12);
+        // Layer 8: Secondary soft glint — dim crescent bottom
+        const gloss2 = this.add.circle(3, 4, 2.5, 0xffffff, 0.15);
 
         container.add([shadow, cylinderBase, cap, rim, midDome, core, gloss1, gloss2]);
         
-        // Define a larger 44x44px interactive hit area centered on the token
-        container.setSize(44, 44);
-        container.setInteractive(new Phaser.Geom.Rectangle(-6, -6, 44, 44), Phaser.Geom.Rectangle.Contains);
+        // Define a perfect circular hit area centered on (0,0) with radius 24 (48px diameter target)
+        container.setSize(48, 48);
+        container.setInteractive(new Phaser.Geom.Circle(0, 0, 24), Phaser.Geom.Circle.Contains);
         
         container.on('pointerdown', () => {
           this.handleTokenClick(playerIdx, tokenIdx);
@@ -332,8 +338,8 @@ export default class MainScene extends Phaser.Scene {
         const targetPixel = gridToPixel(targetGrid);
 
         const offset = this.calculateStackOffset(players, playerIdx, tokenIdx, targetGrid);
-        const finalX = targetPixel.x + offset.x - 16;
-        const finalY = targetPixel.y + offset.y - 16;
+        const finalX = targetPixel.x + offset.x;
+        const finalY = targetPixel.y + offset.y;
 
         if (Math.abs(container.x - finalX) > 2 || Math.abs(container.y - finalY) > 2) {
           // If token sent back to base (-1) from the board, play spin-shrink capture respawn animation
@@ -465,8 +471,8 @@ export default class MainScene extends Phaser.Scene {
       
       this.tweens.add({
         targets: container,
-        x: point.x - 16,
-        y: point.y - 16,
+        x: point.x,
+        y: point.y,
         duration: 180,
         ease: 'Quad.easeInOut',
         onComplete: () => {

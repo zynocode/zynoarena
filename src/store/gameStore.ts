@@ -140,7 +140,35 @@ export const useGameStore = create<GameState>((set, get) => ({
     
     set({ gameStatus: 'ROLLING', lastActionNotice: 'NONE' });
     
-    const roll = Math.floor(Math.random() * 6) + 1;
+    // Adaptive Engagement Balancing Model
+    const calculateProgress = (p: typeof players[0]) => {
+      return p.tokens.reduce((sum, pos) => sum + (pos === -1 ? 0 : pos), 0);
+    };
+
+    const activeProgress = calculateProgress(activePlayer);
+    let maxOpponentProgress = 0;
+    players.forEach((p, idx) => {
+      if (idx !== activePlayerIndex) {
+        maxOpponentProgress = Math.max(maxOpponentProgress, calculateProgress(p));
+      }
+    });
+
+    const isLaggingBehind = maxOpponentProgress - activeProgress > 40;
+    
+    let roll = 1;
+    if (isLaggingBehind) {
+      // 30% chance for a 6, 70% shared equally between 1-5 (14% each)
+      const rand = Math.random();
+      if (rand < 0.30) {
+        roll = 6;
+      } else {
+        roll = Math.floor((rand - 0.30) / 0.14) + 1;
+        if (roll > 5) roll = 5;
+      }
+    } else {
+      // Pure PRNG Model (16.67% each)
+      roll = Math.floor(Math.random() * 6) + 1;
+    }
     
     let newConsecutive = 0;
     if (roll === 6) {

@@ -141,49 +141,49 @@ export function evaluateCPUMove(
 
     let score = 0;
 
-    // A. Capture Opponent (+100)
+    // A. Capture Opponent (Priority 1, Weight: 100)
     if (checkWillCapture(nextGlobalIdx)) {
       score += 100;
     }
 
-    // B. Reaching Goal (+90)
+    // B. Reaching Goal (Special progress finish, Weight: 90)
     if (nextPos === 56) {
       score += 90;
     }
 
-    // C. Entering Home Stretch (+45)
+    // C. Entering Home Column (Priority 3, Weight: 75)
     if (curPos < 51 && nextPos >= 51 && nextPos < 56) {
-      score += 45;
+      score += 75;
     }
 
-    // D. Escaping Danger (+60)
+    // D. Escaping Imminent Threat (Priority 2, Weight: 80)
     const wasThreatened = curPos >= 0 && curPos <= 50 && isCellThreatened(curGlobalIdx);
     const isNowSafe = nextPos >= 51 || isGlobalCellSafe(nextGlobalIdx) || !isCellThreatened(nextGlobalIdx);
     if (wasThreatened && isNowSafe) {
-      score += 60;
+      score += 80;
     }
 
-    // E. Landing on Safe Zone (+35)
+    // E. Landing on Safe Zone (Priority 5, Weight: 50)
     const wasSafe = curPos >= 0 && curPos <= 50 && isGlobalCellSafe(curGlobalIdx);
     const isNowSafeZone = nextPos >= 0 && nextPos <= 50 && isGlobalCellSafe(nextGlobalIdx);
     if (!wasSafe && isNowSafeZone) {
-      score += 35;
+      score += 50;
     }
 
-    // F. Releasing from Base (+40)
+    // F. Releasing from Base (Priority 4, Weight: 70)
     if (curPos === -1 && roll === 6) {
-      score += 40;
+      score += 70;
     }
 
-    // G. Step into Opponent Danger Zone (-25)
+    // G. Step into Opponent Danger Zone (-30)
     const isNowThreatened = nextPos >= 0 && nextPos <= 50 && isCellThreatened(nextGlobalIdx);
     if (!isNowSafeZone && isNowThreatened) {
-      score += -25;
+      score -= 30;
     }
 
-    // H. Proximity Progress Bonus (+0.5 per cell)
-    // Favors moving tokens that are already far along the track
-    score += nextPos * 0.5;
+    // H. Proximity Progress Bonus (Priority 6, Weight: 30 Max)
+    // Scale factor 0.535 ensures max progression (56 spaces) contributes exactly 30 points
+    score += nextPos * 0.535;
 
     // Pick maximum score
     if (score > highestScore) {
