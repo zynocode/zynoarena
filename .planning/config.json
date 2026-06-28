@@ -1,0 +1,8 @@
+{
+  "project_name": "Ludo Royale AI",
+  "workflow": {
+    "planning_mode": true,
+    "require_uat": true,
+    "current_phase": 2
+  }
+}
