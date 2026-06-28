@@ -23,8 +23,8 @@
   --ludo-blue: #3b82f6;
 
   /* Responsive board sizing — used in 4P grid & standalone */
-  --board-size: clamp(260px, min(70vmin, 52vh), 560px);
-  --hud-width: clamp(260px, min(70vmin, 52vh), 560px);
+  --board-size: clamp(320px, min(80vmin, 62vh), 640px);
+  --hud-width: clamp(320px, min(80vmin, 62vh), 640px);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -1159,7 +1159,7 @@ h1, h2, h3, h4 {
 
 /* In full-bleed playing mode: board smaller to fit player panels above/below */
 .playing-full-bleed {
-  --board-size: clamp(240px, min(68vmin, 48vh), 520px);
+  --board-size: clamp(300px, min(78vmin, 58vh), 600px);
 }
 
 @media (max-width: 480px) {

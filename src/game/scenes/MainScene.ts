@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { useGameStore } from '../../store/gameStore';
 import type { Player } from '../../store/gameStore';
-import { getTokenGridCoordinates, gridToPixel, safeZonesGlobalIndices, globalPath } from '../utils/boardCoordinates';
+import { getTokenGridCoordinates, gridToPixel, safeZonesGlobalIndices, globalPath, baseCoords } from '../utils/boardCoordinates';
 import { playSound } from '../utils/audioEngine';
 
 export default class MainScene extends Phaser.Scene {
@@ -143,7 +143,7 @@ export default class MainScene extends Phaser.Scene {
       { name: 'blue', color: 0x3b82f6, x: 0, y: 9 }
     ];
 
-    configs.forEach((base) => {
+    configs.forEach((base, baseIdx) => {
       const px = base.x * cellSize;
       const py = base.y * cellSize;
       const size = 6 * cellSize;
@@ -160,18 +160,13 @@ export default class MainScene extends Phaser.Scene {
       g.strokeRect(px + 40, py + 40, size - 80, size - 80);
 
       g.lineStyle(1.5, 0xcbd5e1, 1);
-      const pocketOffsets = [
-        { dx: 1.5, dy: 1.5 },
-        { dx: 3.5, dy: 1.5 },
-        { dx: 1.5, dy: 3.5 },
-        { dx: 3.5, dy: 3.5 }
-      ];
 
-      pocketOffsets.forEach((offset) => {
-        const slotX = px + (offset.dx - base.x) * cellSize;
-        const slotY = py + (offset.dy - base.y) * cellSize;
+      // Use the actual baseCoords from boardCoordinates.ts
+      const coords = baseCoords[baseIdx];
+      coords.forEach((coord) => {
+        const slotX = coord.x * cellSize;
+        const slotY = coord.y * cellSize;
         
-        // Pockets match the player's own color
         g.fillStyle(base.color, 1.0);
         g.fillCircle(slotX, slotY, 18);
         g.strokeCircle(slotX, slotY, 18);
@@ -258,10 +253,11 @@ export default class MainScene extends Phaser.Scene {
         const gloss2 = this.add.circle(19, 20, 2, 0xffffff, 0.12);
 
         container.add([shadow, cylinderBase, cap, rim, midDome, core, gloss1, gloss2]);
-        container.setSize(32, 32);
-
-        // Click interaction binding - using default 32x32 rectangle centered on goti
-        container.setInteractive();
+        
+        // Define a larger 44x44px interactive hit area centered on the token
+        container.setSize(44, 44);
+        container.setInteractive(new Phaser.Geom.Rectangle(-6, -6, 44, 44), Phaser.Geom.Rectangle.Contains);
+        
         container.on('pointerdown', () => {
           this.handleTokenClick(playerIdx, tokenIdx);
         });
