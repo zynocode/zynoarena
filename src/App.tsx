@@ -379,10 +379,8 @@ export default function App() {
 
               {/* ── 2-PLAYER LAYOUT: Top ↔ Bottom ───────────────────────── */}
               {is2Player ? (() => {
-                // Align panel position with actual board base position:
-                // Yellow & Blue bases are at the bottom of the board.
-                // Red & Green bases are at the top of the board.
-                const bottomPlayer = players.find(p => p.color === 'blue' || p.color === 'yellow') || players[0];
+                // Human player is always at the bottom of the screen
+                const bottomPlayer = players.find(p => p.isHuman) || players[0];
                 const topPlayer = players.find(p => p.id !== bottomPlayer.id) || players[1];
 
                 return (
