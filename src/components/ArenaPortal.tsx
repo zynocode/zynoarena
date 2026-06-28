@@ -13,7 +13,7 @@ interface GameItem {
 const gamesList: GameItem[] = [
   {
     id: 'ludo',
-    title: 'Ludo Royale AI',
+    title: 'Ludo Royale',
     description: 'Play standard Ludo offline with Easy, Medium, and Hard AI. Beautiful animations and full ruleset included.',
     icon: '🎲',
     status: 'playable',
@@ -110,6 +110,19 @@ export default function ArenaPortal({ onSelectGame }: ArenaPortalProps) {
 
   return (
     <div className="arena-container">
+      {/* Mixed-game Arena background overlay */}
+      <div className="arena-bg">
+        <span className="arena-bg-symbol" style={{ top: '10%', left: '8%', animation: 'arena-float-1 8s ease-in-out infinite' }}>🎲</span>
+        <span className="arena-bg-symbol" style={{ top: '25%', right: '12%', animation: 'arena-float-2 10s ease-in-out infinite' }}>♟</span>
+        <span className="arena-bg-symbol" style={{ top: '70%', left: '15%', animation: 'arena-float-3 9s ease-in-out infinite' }}>🎯</span>
+        <span className="arena-bg-symbol" style={{ top: '80%', right: '10%', animation: 'arena-float-1 11s ease-in-out infinite' }}>🃏</span>
+        <span className="arena-bg-symbol" style={{ top: '45%', left: '5%', animation: 'arena-float-2 7s ease-in-out infinite' }}>🧩</span>
+        <span className="arena-bg-symbol" style={{ top: '5%', right: '35%', animation: 'arena-float-3 12s ease-in-out infinite' }}>❌</span>
+        <span className="arena-bg-symbol" style={{ top: '55%', right: '40%', animation: 'arena-float-1 10s ease-in-out infinite' }}>🐍</span>
+        <span className="arena-bg-symbol" style={{ top: '35%', left: '42%', animation: 'arena-float-2 8s ease-in-out infinite' }}>🏓</span>
+        <span className="arena-bg-symbol" style={{ top: '90%', left: '50%', animation: 'arena-float-3 11s ease-in-out infinite' }}>🏎</span>
+      </div>
+
       {/* Header */}
       <header className="arena-header">
         <h1 className="arena-logo">

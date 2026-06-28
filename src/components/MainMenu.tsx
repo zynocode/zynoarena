@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import type { PlayerColor, AIDifficulty, ConfiguredPlayer } from '../store/gameStore';
-import { Play, Volume2, VolumeX, Sparkles, ArrowLeft, Users, ShieldAlert } from 'lucide-react';
+import { Play, Volume2, VolumeX, ArrowLeft, Users, ShieldAlert } from 'lucide-react';
 
 interface SeatConfig {
   color: PlayerColor;
@@ -96,34 +96,63 @@ export default function MainMenu({ onBackToArena }: { onBackToArena?: () => void
           <div className="float-animation" style={{ marginBottom: '24px' }}>
             <div
               style={{
-                background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)',
                 width: '72px',
                 height: '72px',
-                borderRadius: '20px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)',
+                borderRadius: '16px',
+                display: 'inline-grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '4px',
+                background: '#fff',
+                padding: '4px',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
                 marginBottom: '16px',
+                position: 'relative',
+                boxSizing: 'border-box'
               }}
             >
-              <Sparkles size={36} color="#fff" />
+              <div style={{ backgroundColor: '#ef4444', borderRadius: '4px' }} />
+              <div style={{ backgroundColor: '#22c55e', borderRadius: '4px' }} />
+              <div style={{ backgroundColor: '#3b82f6', borderRadius: '4px' }} />
+              <div style={{ backgroundColor: '#eab308', borderRadius: '4px' }} />
+              
+              {/* Center white junction with star */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '20px',
+                  height: '20px',
+                  backgroundColor: '#fff',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  color: '#eab308'
+                }}
+              >
+                ★
+              </div>
             </div>
             <h1
               style={{
                 fontSize: '32px',
                 fontWeight: '800',
                 margin: '0 0 8px 0',
-                background: 'linear-gradient(to right, #a855f7, #6366f1)',
+                background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 fontFamily: 'Outfit, sans-serif',
               }}
             >
-              Ludo Royale AI
+              Ludo Royale
             </h1>
-            <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
-              Sleek offline local match & smart bots
+            <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0 }}>
+              Classic Ludo match with friends & bots
             </p>
           </div>
 
