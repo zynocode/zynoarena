@@ -138,7 +138,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     const { activePlayerIndex, consecutiveSixes, getValidMoves, players } = get();
     const activePlayer = players[activePlayerIndex];
     
-    set({ gameStatus: 'ROLLING', lastActionNotice: 'NONE' });
+    set({ gameStatus: 'ROLLING', lastActionNotice: 'NONE', diceValue: 0 });
     
     // Adaptive Engagement Balancing Model
     const calculateProgress = (p: typeof players[0]) => {
