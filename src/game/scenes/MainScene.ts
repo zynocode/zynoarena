@@ -60,7 +60,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private drawPathways(g: Phaser.GameObjects.Graphics, cellSize: number) {
-    g.lineStyle(1, 0x1e293b, 1); // Border color
+    g.lineStyle(1.5, 0xcbd5e1, 1); // Clean slate border
 
     for (let x = 0; x < 15; x++) {
       for (let y = 0; y < 15; y++) {
@@ -68,7 +68,7 @@ export default class MainScene extends Phaser.Scene {
         const isHome = x >= 6 && x <= 8 && y >= 6 && y <= 8;
 
         if (isArm && !isHome) {
-          g.fillStyle(0x0f172a, 1);
+          g.fillStyle(0xf8fafc, 1); // Clean white track squares
           g.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
           g.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
@@ -83,11 +83,11 @@ export default class MainScene extends Phaser.Scene {
     };
 
     // Red Special Cells
-    g.fillStyle(colorCodes.red, 0.95);
+    g.fillStyle(colorCodes.red, 1.0);
     g.fillRect(1 * cellSize, 6 * cellSize, cellSize, cellSize);
     g.strokeRect(1 * cellSize, 6 * cellSize, cellSize, cellSize);
     for (let x = 1; x <= 5; x++) {
-      g.fillStyle(colorCodes.red, 0.95);
+      g.fillStyle(colorCodes.red, 1.0);
       g.fillRect(x * cellSize, 7 * cellSize, cellSize, cellSize);
       g.strokeRect(x * cellSize, 7 * cellSize, cellSize, cellSize);
     }
@@ -96,11 +96,11 @@ export default class MainScene extends Phaser.Scene {
     g.strokeRect(0 * cellSize, 6 * cellSize, cellSize, cellSize);
 
     // Green Special Cells
-    g.fillStyle(colorCodes.green, 0.95);
+    g.fillStyle(colorCodes.green, 1.0);
     g.fillRect(8 * cellSize, 1 * cellSize, cellSize, cellSize);
     g.strokeRect(8 * cellSize, 1 * cellSize, cellSize, cellSize);
     for (let y = 1; y <= 5; y++) {
-      g.fillStyle(colorCodes.green, 0.95);
+      g.fillStyle(colorCodes.green, 1.0);
       g.fillRect(7 * cellSize, y * cellSize, cellSize, cellSize);
       g.strokeRect(7 * cellSize, y * cellSize, cellSize, cellSize);
     }
@@ -109,11 +109,11 @@ export default class MainScene extends Phaser.Scene {
     g.strokeRect(8 * cellSize, 0 * cellSize, cellSize, cellSize);
 
     // Yellow Special Cells
-    g.fillStyle(colorCodes.yellow, 0.95);
+    g.fillStyle(colorCodes.yellow, 1.0);
     g.fillRect(13 * cellSize, 8 * cellSize, cellSize, cellSize);
     g.strokeRect(13 * cellSize, 8 * cellSize, cellSize, cellSize);
     for (let x = 9; x <= 13; x++) {
-      g.fillStyle(colorCodes.yellow, 0.95);
+      g.fillStyle(colorCodes.yellow, 1.0);
       g.fillRect(x * cellSize, 7 * cellSize, cellSize, cellSize);
       g.strokeRect(x * cellSize, 7 * cellSize, cellSize, cellSize);
     }
@@ -122,11 +122,11 @@ export default class MainScene extends Phaser.Scene {
     g.strokeRect(14 * cellSize, 8 * cellSize, cellSize, cellSize);
 
     // Blue Special Cells
-    g.fillStyle(colorCodes.blue, 0.95);
+    g.fillStyle(colorCodes.blue, 1.0);
     g.fillRect(6 * cellSize, 13 * cellSize, cellSize, cellSize);
     g.strokeRect(6 * cellSize, 13 * cellSize, cellSize, cellSize);
     for (let y = 9; y <= 13; y++) {
-      g.fillStyle(colorCodes.blue, 0.95);
+      g.fillStyle(colorCodes.blue, 1.0);
       g.fillRect(7 * cellSize, y * cellSize, cellSize, cellSize);
       g.strokeRect(7 * cellSize, y * cellSize, cellSize, cellSize);
     }
@@ -137,10 +137,10 @@ export default class MainScene extends Phaser.Scene {
 
   private drawBases(g: Phaser.GameObjects.Graphics, cellSize: number) {
     const configs = [
-      { name: 'red', color: 0x991b1b, x: 0, y: 0 },
-      { name: 'green', color: 0x166534, x: 9, y: 0 },
-      { name: 'yellow', color: 0x854d0e, x: 9, y: 9 },
-      { name: 'blue', color: 0x1e40af, x: 0, y: 9 }
+      { name: 'red', color: 0xef4444, x: 0, y: 0 },
+      { name: 'green', color: 0x22c55e, x: 9, y: 0 },
+      { name: 'yellow', color: 0xeab308, x: 9, y: 9 },
+      { name: 'blue', color: 0x3b82f6, x: 0, y: 9 }
     ];
 
     configs.forEach((base) => {
@@ -148,16 +148,18 @@ export default class MainScene extends Phaser.Scene {
       const py = base.y * cellSize;
       const size = 6 * cellSize;
 
-      g.fillStyle(base.color, 0.4);
-      g.lineStyle(2, base.color, 1);
+      // Solid Player Color Base
+      g.fillStyle(base.color, 1.0);
+      g.lineStyle(2, 0x94a3b8, 1);
       g.fillRect(px, py, size, size);
       g.strokeRect(px, py, size, size);
 
-      g.fillStyle(0xffffff, 0.05);
-      g.fillRect(px + 30, py + 30, size - 60, size - 60);
-      g.strokeRect(px + 30, py + 30, size - 60, size - 60);
+      // Solid White Inner Card
+      g.fillStyle(0xffffff, 1.0);
+      g.fillRect(px + 40, py + 40, size - 80, size - 80);
+      g.strokeRect(px + 40, py + 40, size - 80, size - 80);
 
-      g.lineStyle(2, 0xffffff, 0.15);
+      g.lineStyle(1.5, 0xcbd5e1, 1);
       const pocketOffsets = [
         { dx: 1.5, dy: 1.5 },
         { dx: 3.5, dy: 1.5 },
@@ -169,7 +171,8 @@ export default class MainScene extends Phaser.Scene {
         const slotX = px + (offset.dx - base.x) * cellSize;
         const slotY = py + (offset.dy - base.y) * cellSize;
         
-        g.fillStyle(0x0f172a, 0.6);
+        // Pockets match the player's own color
+        g.fillStyle(base.color, 1.0);
         g.fillCircle(slotX, slotY, 18);
         g.strokeCircle(slotX, slotY, 18);
       });
@@ -225,12 +228,20 @@ export default class MainScene extends Phaser.Scene {
         // We shift the container position so its center (16,16) aligns exactly on grid pixel
         const container = this.add.container(pixel.x - 16, pixel.y - 16);
 
-        const shadow = this.add.circle(18, 18, 14, 0x000000, 0.4);
-        const body = this.add.circle(16, 16, 14, colorHex, 1);
-        body.setStrokeStyle(2, 0xffffff, 0.9);
-        const inner = this.add.circle(16, 16, 7, 0xffffff, 0.3);
+        const shadow = this.add.circle(18, 18, 14, 0x000000, 0.45);
+        
+        // Outer ring (Solid Player Color with White outline)
+        const outer = this.add.circle(16, 16, 14, colorHex, 1);
+        outer.setStrokeStyle(2, 0xffffff, 1.0);
+        
+        // Inner white ring (gives the goti a beautiful physical border look)
+        const innerRing = this.add.circle(16, 16, 9, 0xffffff, 1.0);
+        innerRing.setStrokeStyle(1.5, colorHex, 1.0);
 
-        container.add([shadow, body, inner]);
+        // Core dot (Solid Player Color in the very center)
+        const core = this.add.circle(16, 16, 4.5, colorHex, 1.0);
+
+        container.add([shadow, outer, innerRing, core]);
         container.setSize(32, 32);
 
         // Click interaction binding - using default 32x32 rectangle centered on goti

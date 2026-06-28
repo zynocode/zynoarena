@@ -40,7 +40,11 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
-  background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+  background-image: linear-gradient(rgba(10, 15, 30, 0.85), rgba(2, 6, 23, 0.95)), url('./assets/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 #root {
@@ -529,9 +533,11 @@ h1, h2, h3, h4 {
   width: 100vw;
   height: 100vh;
   min-height: 100vh;
-  background: radial-gradient(circle at 50% 50%, rgba(30, 27, 75, 0.45) 0%, rgba(15, 23, 42, 0.55) 100%);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  background-image: linear-gradient(rgba(10, 15, 30, 0.45), rgba(15, 23, 42, 0.55)), url('./assets/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
   z-index: 100;
   padding: 16px;
   overflow-y: auto;
