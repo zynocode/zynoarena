@@ -14,6 +14,13 @@ export interface Player {
   tokens: number[]; // -1 for base, 0..50 for main path, 51..55 for home stretch, 56 for finished
 }
 
+export interface ConfiguredPlayer {
+  name: string;
+  isHuman: boolean;
+  color: PlayerColor;
+  difficulty?: AIDifficulty;
+}
+
 export type GameStatus = 'WAITING_FOR_ROLL' | 'ROLLING' | 'WAITING_FOR_MOVE' | 'MOVING' | 'CHECKING_RULES' | 'GAME_OVER';
 
 export interface MovingTokenInfo {
@@ -37,10 +44,11 @@ interface GameState {
   validMoves: number[]; // Valid token indices for active player
   movingTokenInfo: MovingTokenInfo | null;
   lastActionNotice: ActionNotice;
+  lastMatchConfig: ConfiguredPlayer[];
   
   // Actions
   setScreen: (screen: GameScreen) => void;
-  setupGame: (numCPUs: number, difficulty: AIDifficulty, playerColor: PlayerColor) => void;
+  setupGame: (configuredPlayers: ConfiguredPlayer[]) => void;
   setGameStatus: (status: GameStatus) => void;
   setDiceValue: (val: number) => void;
   incrementConsecutiveSixes: () => void;
@@ -55,7 +63,6 @@ interface GameState {
   getValidMoves: (playerIdx: number, roll: number) => number[];
 }
 
-const colorOrder: PlayerColor[] = ['red', 'green', 'yellow', 'blue'];
 
 export const useGameStore = create<GameState>((set, get) => ({
   currentScreen: 'MENU',
@@ -69,58 +76,23 @@ export const useGameStore = create<GameState>((set, get) => ({
   validMoves: [],
   movingTokenInfo: null,
   lastActionNotice: 'NONE',
+  lastMatchConfig: [],
 
   setScreen: (screen) => set({ currentScreen: screen }),
   
-  setupGame: (numCPUs, difficulty, playerColor) => {
-    const humanIndex = colorOrder.indexOf(playerColor);
-
-    const activeColors = new Set<PlayerColor>();
-    activeColors.add(playerColor);
-
-    if (numCPUs === 1) {
-      // 1v1: opponent at diagonal opposite corner
-      // Board layout: 0=TopLeft, 1=TopRight, 2=BottomRight, 3=BottomLeft
-      // Diagonal pairs: (0,2) and (1,3)
-      const oppositeIdx = (humanIndex + 2) % 4;
-      activeColors.add(colorOrder[oppositeIdx]);
-    } else if (numCPUs === 2) {
-      // 1v2: spread 3 players evenly — use opposite corner and one adjacent to opposite
-      // This avoids all 3 being bunched together on one side
-      const oppositeIdx = (humanIndex + 2) % 4;
-      const adjacentToOppositeIdx = (humanIndex + 1) % 4;
-      activeColors.add(colorOrder[oppositeIdx]);
-      activeColors.add(colorOrder[adjacentToOppositeIdx]);
-    } else {
-      colorOrder.forEach(c => activeColors.add(c));
-    }
-
-    const finalPlayers: Player[] = [];
-    let cpuCounter = 1;
-    for (let i = 0; i < 4; i++) {
-      const color = colorOrder[i];
-      if (color === playerColor) {
-        finalPlayers.push({
-          id: finalPlayers.length,
-          name: 'Player 1 (You)',
-          color,
-          isHuman: true,
-          tokens: [-1, -1, -1, -1],
-        });
-      } else if (activeColors.has(color)) {
-        finalPlayers.push({
-          id: finalPlayers.length,
-          name: `CPU ${cpuCounter++}`,
-          color,
-          isHuman: false,
-          difficulty,
-          tokens: [-1, -1, -1, -1],
-        });
-      }
-    }
+  setupGame: (configuredPlayers) => {
+    const finalPlayers: Player[] = configuredPlayers.map((cp, idx) => ({
+      id: idx,
+      name: cp.name.trim() || (cp.isHuman ? `Player ${idx + 1}` : `CPU ${idx + 1}`),
+      color: cp.color,
+      isHuman: cp.isHuman,
+      difficulty: cp.difficulty,
+      tokens: [-1, -1, -1, -1],
+    }));
 
     set({
       players: finalPlayers,
+      lastMatchConfig: configuredPlayers,
       activePlayerIndex: 0,
       gameStatus: 'WAITING_FOR_ROLL',
       diceValue: 1,

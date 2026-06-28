@@ -216,9 +216,10 @@ export default class MainScene extends Phaser.Scene {
   private initTokens(players: Player[]) {
     players.forEach((player, playerIdx) => {
       const colorHex = this.getColorHex(player.color);
+      const colorIdx = ['red', 'green', 'yellow', 'blue'].indexOf(player.color);
 
       player.tokens.forEach((position, tokenIdx) => {
-        const gridCoord = getTokenGridCoordinates(playerIdx, position, tokenIdx);
+        const gridCoord = getTokenGridCoordinates(colorIdx, position, tokenIdx);
         const pixel = gridToPixel(gridCoord);
 
         // We shift the container position so its center (16,16) aligns exactly on grid pixel
@@ -303,7 +304,8 @@ export default class MainScene extends Phaser.Scene {
         const container = this.tokenSprites.get(key);
         if (!container) return;
 
-        const targetGrid = getTokenGridCoordinates(playerIdx, position, tokenIdx);
+        const colorIdx = ['red', 'green', 'yellow', 'blue'].indexOf(player.color);
+        const targetGrid = getTokenGridCoordinates(colorIdx, position, tokenIdx);
         const targetPixel = gridToPixel(targetGrid);
 
         const offset = this.calculateStackOffset(players, playerIdx, tokenIdx, targetGrid);
@@ -410,15 +412,19 @@ export default class MainScene extends Phaser.Scene {
 
     // Build the grid waypoint list
     const waypoints: { x: number; y: number }[] = [];
+    const state = useGameStore.getState();
+    const player = state.players[playerIdx];
+    if (!player) return;
+    const colorIdx = ['red', 'green', 'yellow', 'blue'].indexOf(player.color);
 
     if (startPos === -1) {
       // Releasing from base to index 0: just 1 step slide
-      const grid = getTokenGridCoordinates(playerIdx, 0, tokenIdx);
+      const grid = getTokenGridCoordinates(colorIdx, 0, tokenIdx);
       waypoints.push(gridToPixel(grid));
     } else {
       // Step-by-step path array
       for (let pos = startPos + 1; pos <= endPos; pos++) {
-        const grid = getTokenGridCoordinates(playerIdx, pos, tokenIdx);
+        const grid = getTokenGridCoordinates(colorIdx, pos, tokenIdx);
         waypoints.push(gridToPixel(grid));
       }
     }
@@ -473,10 +479,11 @@ export default class MainScene extends Phaser.Scene {
     const matchingTokens: { playerIdx: number; tokenIdx: number }[] = [];
     
     players.forEach((p, pIdx) => {
+      const pColorIdx = ['red', 'green', 'yellow', 'blue'].indexOf(p.color);
       p.tokens.forEach((pos, tIdx) => {
         if (pos === -1) return;
 
-        const coord = getTokenGridCoordinates(pIdx, pos, tIdx);
+        const coord = getTokenGridCoordinates(pColorIdx, pos, tIdx);
         if (coord.x === grid.x && coord.y === grid.y) {
           matchingTokens.push({ playerIdx: pIdx, tokenIdx: tIdx });
         }
