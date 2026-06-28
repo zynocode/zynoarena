@@ -261,7 +261,7 @@ export default class MainScene extends Phaser.Scene {
         container.add([shadow, cylinderBase, cap, rim, midDome, core, gloss1, gloss2]);
         
         // Define a perfect circular hit area centered on (0,0) with radius 24 (48px diameter target)
-        container.setSize(48, 48);
+        // We do not call setSize() to avoid offsetting the circular shape relative to container center
         container.setInteractive(new Phaser.Geom.Circle(0, 0, 24), Phaser.Geom.Circle.Contains);
         
         container.on('pointerdown', () => {
@@ -323,12 +323,18 @@ export default class MainScene extends Phaser.Scene {
       return;
     }
 
+    const state = useGameStore.getState();
+
     players.forEach((player, playerIdx) => {
       player.tokens.forEach((position, tokenIdx) => {
         const key = `${playerIdx}_${tokenIdx}`;
         
-        // If this token is currently in the middle of a path tween, skip static sync!
-        if (this.activeMovingTokenKey === key) return;
+        // Skip static sync if the token is currently animating in the scene or marked as moving in the store
+        const isStoreMoving = state.movingTokenInfo && 
+                              state.movingTokenInfo.playerIdx === playerIdx && 
+                              state.movingTokenInfo.tokenIdx === tokenIdx;
+        
+        if (this.activeMovingTokenKey === key || isStoreMoving) return;
 
         const container = this.tokenSprites.get(key);
         if (!container) return;
