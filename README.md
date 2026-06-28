@@ -2,16 +2,23 @@
 
 <div align="center">
 
-![ZynoArena Banner](https://img.shields.io/badge/ZynoArena-Browser%20Games-blueviolet?style=for-the-badge&logo=gamepad&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=for-the-badge&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61dafb?style=for-the-badge&logo=react&logoColor=black)
-![Phaser](https://img.shields.io/badge/Phaser-3.x-orange?style=for-the-badge)
+[![ZynoArena](https://img.shields.io/badge/ZynoArena-Browser%20Games-blueviolet?style=for-the-badge&logo=gamepad&logoColor=white)](https://github.com/zynocode/zynoarena)
+[![Version](https://img.shields.io/github/v/release/zynocode/zynoarena?style=for-the-badge&color=brightgreen&label=version)](https://github.com/zynocode/zynoarena/releases)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/zynocode/zynoarena?style=for-the-badge&color=yellow)](https://github.com/zynocode/zynoarena/stargazers)
 
-**An open-source collection of modern, AI-powered browser games.**  
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8.x-646cff?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Phaser](https://img.shields.io/badge/Phaser-4.x-orange?style=flat-square&logo=phaser&logoColor=white)](https://phaser.io/)
+[![Open Issues](https://img.shields.io/github/issues/zynocode/zynoarena?style=flat-square)](https://github.com/zynocode/zynoarena/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/zynocode/zynoarena?style=flat-square)](https://github.com/zynocode/zynoarena/commits/main)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
+
+**An open-source collection of modern, AI-powered browser games.**
 Play offline. No accounts. No installs. Just open and play.
 
-[🕹️ Play Now](#) · [🐛 Report Bug](https://github.com/zynocode/zynoarena/issues) · [💡 Request Feature](https://github.com/zynocode/zynoarena/issues)
+[🕹️ Play Now →](https://github.com/zynocode/zynoarena) &nbsp;·&nbsp; [🐛 Report Bug](https://github.com/zynocode/zynoarena/issues/new?labels=bug) &nbsp;·&nbsp; [💡 Request Feature](https://github.com/zynocode/zynoarena/issues/new?labels=enhancement) &nbsp;·&nbsp; [🤝 Contribute](CONTRIBUTING.md)
 
 </div>
 
@@ -23,12 +30,12 @@ Play offline. No accounts. No installs. Just open and play.
 
 | Feature | Details |
 |---|---|
-| 🧠 AI Difficulty | Easy · Medium · Hard (scoring matrix) |
+| 🧠 AI Difficulty | Easy · Medium · Hard (weighted scoring matrix) |
 | 👥 Game Modes | 1v1 · 1v2 · 1v3 (Human vs CPU) |
-| 🎵 Sound Effects | Procedural Web Audio (no files needed) |
+| 🎵 Sound Effects | Procedural Web Audio API (zero asset files) |
 | 📱 Responsive | Scales from 360px mobile to 1440px desktop |
 | 🌐 Offline | Zero network dependency after load |
-| ⚡ Tech Stack | React + Vite + TypeScript + Phaser 3 + Zustand |
+| ⚡ Tech Stack | React 19 + Vite 8 + TypeScript + Phaser 4 + Zustand |
 
 ### 🖼️ Screenshots
 
@@ -36,53 +43,56 @@ Play offline. No accounts. No installs. Just open and play.
 |---|---|---|
 | Dark glassmorphism lobby | Vector-drawn Ludo board | Confetti + medal scoreboard |
 
+> 💡 *Screenshots coming soon — contributions welcome!*
+
 ---
 
 ## 🗺️ Roadmap
 
-### ✅ Ludo Royale AI (Shipped)
+### ✅ v1.0.0 — Ludo Royale AI (Released)
 - [x] Full Ludo rule engine (base release, captures, safe zones, home stretch)
 - [x] 3-tier AI — Easy (random), Medium (priority), Hard (weight matrix)
-- [x] Phaser 3 step-by-step token movement with bounce tweens
+- [x] Phaser 4 step-by-step token movement with bounce tweens
 - [x] Capture spin-shrink-respawn animation
 - [x] Procedural SFX via Web Audio API
 - [x] Responsive CSS layout with `clamp()` sizing
 - [x] Event banner overlays (capture, extra roll, 3-sixes void)
 - [x] Game Over confetti + medal scoreboard
+- [x] Local multiplayer with custom player names
 
-### 🔜 Coming Soon
+### 🔜 v2.0.0 — Coming Soon
 
-| Game | Status |
-|---|---|
-| ♟ Chess | Planned |
-| 🎯 Snake & Ladder | Planned |
-| ❌ Tic Tac Toe | Planned |
-| 🐍 Snake Game | Planned |
-| 🧩 Sudoku | Planned |
-| 🃏 Card Games | Planned |
-| 🏓 Pong | Planned |
-| 🏎 Racing Games | Planned |
-| 🧠 Puzzle Games | Planned |
+| Game | Status | Priority |
+|---|---|---|
+| ♟ Chess | Planned | High |
+| 🎯 Snake & Ladder | Planned | High |
+| ❌ Tic Tac Toe | Planned | Medium |
+| 🐍 Snake Game | Planned | Medium |
+| 🧩 Sudoku | Planned | Medium |
+| 🃏 Card Games (21/Solitaire) | Planned | Low |
+| 🏓 Pong | Planned | Low |
+| 🏎 Racing Games | Planned | Low |
+| 🧠 Puzzle Games | Planned | Low |
 
-### 🚀 Platform Features
-- [ ] Multiplayer (local & online)
-- [ ] Online Matchmaking
+### 🚀 Platform Features (Future)
+- [ ] Online Multiplayer & Matchmaking
 - [ ] Tournament Mode
 - [ ] Achievements & Badges
-- [ ] Leaderboards
-- [ ] User Profiles
+- [ ] Global Leaderboards
+- [ ] User Profiles & Stats
 
 ---
 
 ## 🛠️ Tech Stack
 
 ```
-Frontend   →  React 18 + TypeScript + Vite
-Game Engine →  Phaser 3 (canvas rendering, tweens, input)
-State       →  Zustand (reactive game state)
-Styling     →  Vanilla CSS (glassmorphism, dark theme)
-Audio       →  Web Audio API (procedural synthesis)
-Build       →  Vite + Rolldown
+Frontend     →  React 19 + TypeScript 5.x + Vite 8
+Game Engine  →  Phaser 4 (canvas rendering, tweens, physics, input)
+State        →  Zustand 5 (reactive game state)
+Styling      →  Vanilla CSS (glassmorphism dark theme, clamp() responsive)
+Audio        →  Web Audio API (procedural synthesis, zero assets)
+Linting      →  oxlint (fast Rust-based linter)
+Build        →  Vite + Rolldown
 ```
 
 ---
@@ -90,20 +100,21 @@ Build       →  Vite + Rolldown
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- npm or pnpm
+
+- **Node.js** 18+ ([Download](https://nodejs.org))
+- **npm** 9+ or **pnpm** 8+
 
 ### Run Locally
 
 ```bash
-# Clone the repo
+# 1. Clone the repo
 git clone https://github.com/zynocode/zynoarena.git
 cd zynoarena
 
-# Install dependencies
+# 2. Install dependencies
 npm install
 
-# Start dev server
+# 3. Start dev server
 npm run dev
 ```
 
@@ -112,56 +123,83 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 ### Build for Production
 
 ```bash
-npm run build
-npm run preview
+npm run build    # TypeScript check + Vite build
+npm run preview  # Preview production build locally
+```
+
+### Lint
+
+```bash
+npm run lint     # Run oxlint
 ```
 
 ---
 
 ## 🧠 AI Architecture (Ludo)
 
-The CPU AI is modular — difficulty is selected per-player and plugged into a single decision engine:
+The CPU AI is modular — difficulty is selected per-player at game start and plugged into a single decision engine:
 
 ```
-Easy   →  Random token selection
-Medium →  Priority queue: Capture > Escape Danger > Release > Advance Leader
+Easy   →  Random token selection from all legal moves
+
+Medium →  Priority queue:
+          Capture > Escape Danger > Release from Base > Advance Leader
+
 Hard   →  Weighted scoring matrix per candidate move:
-            +100  Capture opponent
-            +90   Reach home
-            +60   Escape threat zone
+            +100  Capture opponent token
+            +90   Reach home column (win move)
+            +60   Escape an active threat zone
             +45   Enter home stretch
-            +40   Release from base (on 6)
-            +35   Land on safe zone
-            +0.5  Per-tile proximity bonus
-            -25   Step into danger zone
+            +40   Release token from base (on roll of 6)
+            +35   Land on a safe zone cell
+            +0.5  Per-tile proximity bonus (advancement)
+            -25   Step into an opponent's danger zone
 ```
+
+The engine returns the **highest-scoring legal move** deterministically (no RNG in Hard mode).
 
 ---
 
 ## 📁 Project Structure
 
 ```
-src/
-├── components/         # React UI components (Dice, MainMenu)
-├── game/
-│   ├── scenes/         # Phaser scenes (MainScene)
-│   └── utils/          # Board coordinates, AI engine, Audio
-├── store/              # Zustand game state
-└── App.tsx             # Root layout + CPU scheduler
+zynoarena/
+├── public/                  # Static assets
+├── src/
+│   ├── assets/              # Images, icons
+│   ├── components/          # React UI components (Dice, MainMenu, Lobby)
+│   ├── game/
+│   │   ├── scenes/          # Phaser scenes (MainScene, GameOver)
+│   │   └── utils/           # Board coordinates, AI engine, Audio API
+│   ├── store/               # Zustand game state slices
+│   ├── App.tsx              # Root layout + CPU scheduler
+│   ├── main.tsx             # React entry point
+│   └── index.css            # Global styles (glassmorphism design system)
+├── CONTRIBUTING.md          # Contribution guidelines
+├── LICENSE                  # MIT License
+├── package.json
+├── vite.config.ts
+└── README.md
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! To add a new game:
+We love contributions! Whether it's a bug fix, a new game, or a UI improvement — all are welcome.
 
-1. Fork the repo
-2. Create a new folder under `src/games/<game-name>/`
-3. Implement your game using the existing tech stack
-4. Submit a PR with a demo screenshot
+Read our **[Contributing Guide](CONTRIBUTING.md)** to get started.
 
-Please follow the existing code style and keep components modular.
+**Quick start for contributors:**
+```bash
+git checkout -b feat/your-feature-name
+# make your changes
+npm run lint && npm run build
+git commit -m "feat: describe your change"
+# open a PR 🎉
+```
+
+Please follow [Conventional Commits](https://www.conventionalcommits.org/) and keep components modular.
 
 ---
 
@@ -169,12 +207,28 @@ Please follow the existing code style and keep components modular.
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
+You are free to use, modify, and distribute this code — just keep the attribution.
+
+---
+
+## 🌟 Acknowledgements
+
+- [Phaser](https://phaser.io/) — The powerful HTML5 game framework
+- [React](https://react.dev/) — UI component library
+- [Zustand](https://github.com/pmndrs/zustand) — Lightweight state management
+- [Vite](https://vitejs.dev/) — Lightning-fast build tooling
+- All [contributors](https://github.com/zynocode/zynoarena/graphs/contributors) who make this project better ❤️
+
 ---
 
 <div align="center">
 
 Made with ❤️ by [zynocode](https://github.com/zynocode)
 
-⭐ Star this repo if you like it!
+⭐ **Star this repo** if you find it useful — it helps us grow!
+
+[![GitHub Stars](https://img.shields.io/github/stars/zynocode/zynoarena?style=social)](https://github.com/zynocode/zynoarena/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/zynocode/zynoarena?style=social)](https://github.com/zynocode/zynoarena/network/members)
+[![Follow zynocode](https://img.shields.io/github/followers/zynocode?style=social&label=Follow%20zynocode)](https://github.com/zynocode)
 
 </div>
