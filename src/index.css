@@ -254,3 +254,258 @@ h1, h2, h3, h4 {
     padding: 8px 12px;
   }
 }
+
+/* =========================================================================
+   ZYNOARENA PORTAL STYLES
+   ========================================================================= */
+
+.arena-container {
+  width: 100%;
+  max-width: 1200px;
+  min-height: 100vh;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.arena-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.arena-logo {
+  font-size: clamp(36px, 6vw, 56px);
+  font-weight: 800;
+  background: linear-gradient(135deg, #a855f7 0%, #3b82f6 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.3));
+}
+
+.arena-subtitle {
+  font-size: clamp(14px, 2.5vw, 18px);
+  color: #94a3b8;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Search and Filters */
+.arena-controls {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
+  align-items: center;
+}
+
+.arena-search-input {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 24px;
+  border-radius: 14px;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.arena-search-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.25);
+  background: rgba(15, 23, 42, 0.85);
+}
+
+.arena-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.arena-filter-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 8px 18px;
+  border-radius: 20px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.arena-filter-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.arena-filter-btn.active {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Games Grid */
+.arena-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 1100px;
+  margin-bottom: 60px;
+}
+
+/* Game Card */
+.game-card {
+  position: relative;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 280px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.game-card.playable {
+  cursor: pointer;
+}
+
+.game-card.playable:hover {
+  transform: translateY(-8px);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(99, 102, 241, 0.15);
+}
+
+.game-card.upcoming {
+  opacity: 0.65;
+  filter: grayscale(30%);
+}
+
+.game-card.upcoming:hover {
+  transform: translateY(-2px);
+  opacity: 0.8;
+}
+
+.game-card-icon {
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+
+.game-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+}
+
+.game-card-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+.game-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  z-index: 2;
+}
+
+.game-card-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+}
+
+.game-card-badge.playable {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.game-card-badge.upcoming {
+  background: rgba(148, 163, 184, 0.1);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.game-card-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.game-card-btn.playable {
+  background: #6366f1;
+  color: #fff;
+}
+
+.game-card-btn.playable:hover {
+  background: #4f46e5;
+  transform: scale(1.05);
+}
+
+.game-card-btn.upcoming {
+  background: rgba(255, 255, 255, 0.05);
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+/* Arena Footer */
+.arena-footer {
+  text-align: center;
+  color: #475569;
+  font-size: 13px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+  max-width: 800px;
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.arena-footer a {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.arena-footer a:hover {
+  color: #94a3b8;
+}
+

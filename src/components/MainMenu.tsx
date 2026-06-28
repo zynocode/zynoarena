@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import type { PlayerColor, AIDifficulty } from '../store/gameStore';
-import { Play, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { Play, Volume2, VolumeX, Sparkles, ArrowLeft } from 'lucide-react';
 
-export default function MainMenu() {
+
+export default function MainMenu({ onBackToArena }: { onBackToArena?: () => void }) {
   const { setupGame, mute, toggleMute } = useGameStore();
   const [showSetup, setShowSetup] = useState(false);
   const [numCPUs, setNumCPUs] = useState<number>(3);
@@ -70,6 +71,11 @@ export default function MainMenu() {
             <button className="btn-primary" onClick={() => setShowSetup(true)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               <Play size={18} fill="#fff" /> Start Match
             </button>
+            {onBackToArena && (
+              <button className="btn-secondary" onClick={onBackToArena} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <ArrowLeft size={16} /> Back to Arena
+              </button>
+            )}
             <button className="btn-secondary" style={{ pointerEvents: 'none', opacity: 0.5 }}>
               Leaderboards (Online)
             </button>
