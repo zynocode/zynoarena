@@ -176,7 +176,7 @@ export default function App() {
         }} />
       )}
 
-      {/* LUDO ROYALE AI MODULE */}
+      {/* LUDO ROYALE MODULE */}
       {activeGame === 'LUDO' && (
         <div className={`ludo-module-container ${currentScreen === 'PLAYING' ? 'playing-full-bleed' : ''}`}>
           {/* MENU / SETUP */}

@@ -24,7 +24,7 @@ Play offline. No accounts. No installs. Just open and play.
 
 ---
 
-## 🎲 Current Game — Ludo Royale AI
+## 🎲 Current Game — Ludo Royale
 
 > A fully-featured Ludo game with intelligent CPU opponents, smooth animations, and a premium dark glassmorphism UI.
 
@@ -49,7 +49,7 @@ Play offline. No accounts. No installs. Just open and play.
 
 ## 🗺️ Roadmap
 
-### ✅ v1.0.0 — Ludo Royale AI (Released)
+### ✅ v1.0.0 — Ludo Royale (Released)
 - [x] Full Ludo rule engine (base release, captures, safe zones, home stretch)
 - [x] 3-tier AI — Easy (random), Medium (priority), Hard (weight matrix)
 - [x] Phaser 4 step-by-step token movement with bounce tweens
