@@ -509,3 +509,74 @@ h1, h2, h3, h4 {
   color: #94a3b8;
 }
 
+/* ====================================
+   PHASE 9 FULL SCREEN BLEED & LOG FEED
+   ==================================== */
+
+.ludo-module-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.ludo-module-container.playing-full-bleed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 50%, rgba(30, 27, 75, 0.45) 0%, rgba(15, 23, 42, 0.55) 100%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  z-index: 100;
+  padding: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Match Log Terminal Style Console */
+.log-console {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: 'Outfit', 'Inter', monospace;
+  font-size: 11px;
+  color: #94a3b8;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+/* Custom scrollbars for clean look */
+.log-console::-webkit-scrollbar {
+  width: 4px;
+}
+.log-console::-webkit-scrollbar-track {
+  background: transparent;
+}
+.log-console::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.log-item {
+  line-height: 1.5;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  word-wrap: break-word;
+}
+
+

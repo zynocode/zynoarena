@@ -45,6 +45,7 @@ interface GameState {
   movingTokenInfo: MovingTokenInfo | null;
   lastActionNotice: ActionNotice;
   lastMatchConfig: ConfiguredPlayer[];
+  actionLogs: string[];
   
   // Actions
   setScreen: (screen: GameScreen) => void;
@@ -61,6 +62,7 @@ interface GameState {
   toggleMute: () => void;
   resetGame: () => void;
   getValidMoves: (playerIdx: number, roll: number) => number[];
+  addActionLog: (msg: string) => void;
 }
 
 
@@ -77,6 +79,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   movingTokenInfo: null,
   lastActionNotice: 'NONE',
   lastMatchConfig: [],
+  actionLogs: [],
 
   setScreen: (screen) => set({ currentScreen: screen }),
   
@@ -102,6 +105,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       movingTokenInfo: null,
       lastActionNotice: 'NONE',
       currentScreen: 'PLAYING',
+      actionLogs: ['📢 Match started! Get ready to roll.'],
     });
   },
 
@@ -131,7 +135,8 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   rollDice: () => {
-    const { activePlayerIndex, consecutiveSixes, getValidMoves } = get();
+    const { activePlayerIndex, consecutiveSixes, getValidMoves, players } = get();
+    const activePlayer = players[activePlayerIndex];
     
     set({ gameStatus: 'ROLLING', lastActionNotice: 'NONE' });
     
@@ -143,7 +148,10 @@ export const useGameStore = create<GameState>((set, get) => ({
     }
 
     setTimeout(() => {
+      get().addActionLog(`🎲 ${activePlayer.name} rolled a ${roll}`);
+
       if (newConsecutive === 3) {
+        get().addActionLog(`⚠️ ${activePlayer.name} rolled three 6s! Turn voided.`);
         set({
           diceValue: roll,
           consecutiveSixes: 0,
@@ -169,6 +177,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       });
 
       if (valid.length === 0) {
+        get().addActionLog(`❌ ${activePlayer.name} has no valid moves.`);
         setTimeout(() => {
           get().nextTurn();
         }, 1800);
@@ -184,8 +193,10 @@ export const useGameStore = create<GameState>((set, get) => ({
     let targetPos = currentPos;
     if (currentPos === -1) {
       targetPos = 0;
+      get().addActionLog(`🚀 ${activePlayer.name} released a token to start`);
     } else {
       targetPos = currentPos + diceValue;
+      get().addActionLog(`🏃 ${activePlayer.name} moved a token ${diceValue} spaces`);
     }
 
     set({
@@ -215,6 +226,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     const targetCoord = getTokenGridCoordinates(playerIdx, endPos, tokenIdx);
     let capturedOpponent = false;
+    let capturedPlayerName = 'Opponent';
 
     const finalPlayers = updatedPlayers.map((p, pIdx) => {
       if (pIdx === playerIdx) return p;
@@ -229,6 +241,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             
             if (!isSafe) {
               capturedOpponent = true;
+              capturedPlayerName = p.name;
               return -1;
             }
           }
@@ -239,9 +252,14 @@ export const useGameStore = create<GameState>((set, get) => ({
       return { ...p, tokens: updatedTokens };
     });
 
+    if (capturedOpponent) {
+      get().addActionLog(`💥 ${finalPlayers[playerIdx].name} captured ${capturedPlayerName}!`);
+    }
+
     const hasWon = finalPlayers[playerIdx].tokens.every(pos => pos === 56);
 
     if (hasWon) {
+      get().addActionLog(`🏆 ${finalPlayers[playerIdx].name} has WON the match!`);
       set({
         players: finalPlayers,
         movingTokenInfo: null,
@@ -252,7 +270,19 @@ export const useGameStore = create<GameState>((set, get) => ({
       return;
     }
 
+    if (endPos === 56) {
+      get().addActionLog(`🎉 ${finalPlayers[playerIdx].name} got a token home!`);
+    }
+
     const extraTurn = (diceValue === 6 && get().consecutiveSixes < 3) || capturedOpponent;
+
+    if (extraTurn) {
+      if (capturedOpponent) {
+        get().addActionLog(`🔄 ${finalPlayers[playerIdx].name} gets an extra turn for capturing!`);
+      } else {
+        get().addActionLog(`🔄 ${finalPlayers[playerIdx].name} gets an extra turn for rolling a 6!`);
+      }
+    }
 
     set({
       players: finalPlayers,
@@ -296,7 +326,12 @@ export const useGameStore = create<GameState>((set, get) => ({
     movingTokenInfo: null,
     lastActionNotice: 'NONE',
     currentScreen: 'MENU',
+    actionLogs: [],
   }),
+
+  addActionLog: (msg) => set((state) => ({
+    actionLogs: [msg, ...state.actionLogs].slice(0, 15)
+  })),
 }));
 
 const startIndices = [0, 13, 26, 39];
