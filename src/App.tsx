@@ -5,7 +5,7 @@ import MainMenu from './components/MainMenu';
 import Dice from './components/Dice';
 import { initLudoGame } from './game/LudoGame';
 import { evaluateCPUMove } from './game/utils/ludoAI';
-import { playSound } from './game/utils/audioEngine';
+import { useAudio } from './audio/useAudio';
 import { Volume2, VolumeX, RotateCcw, Play, Trophy, ArrowLeft } from 'lucide-react';
 
 // ---- Confetti burst component -------------------------------------------
@@ -47,6 +47,7 @@ function Confetti() {
 // =========================================================================
 export default function App() {
   const [activeGame, setActiveGame] = useState<'ARENA' | 'LUDO'>('ARENA');
+  const { play } = useAudio();
 
   const { 
     currentScreen, 
@@ -62,11 +63,16 @@ export default function App() {
     validMoves, 
     rollDice, 
     selectToken,
-    lastMatchConfig
+    lastMatchConfig,
+    
+    // Timer and Autoplay Hook mappings
+    isAutoPlay,
+    turnTimeLeft,
+    resumeControl,
+    tickTimer
   } = useGameStore();
 
   const gameRef = useRef<Phaser.Game | null>(null);
-  const prevScreenRef = useRef(currentScreen);
 
   // Phaser Initialization
   useEffect(() => {
@@ -83,31 +89,44 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentScreen, activeGame]);
 
-  // Play win sound on game over transition
+  // Play popup open sound on game over transition
   useEffect(() => {
-    if (activeGame === 'LUDO' && currentScreen === 'GAME_OVER' && prevScreenRef.current !== 'GAME_OVER') {
-      playSound('win', mute);
+    if (activeGame === 'LUDO' && currentScreen === 'GAME_OVER') {
+      play('popupOpen');
     }
-    prevScreenRef.current = currentScreen;
-  }, [currentScreen, activeGame, mute]);
+  }, [currentScreen, activeGame, play]);
+
+  // Turn Timer ticks
+  useEffect(() => {
+    if (activeGame !== 'LUDO' || currentScreen !== 'PLAYING' || gameStatus === 'GAME_OVER') return;
+    
+    const intervalId = window.setInterval(() => {
+      tickTimer();
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [activeGame, currentScreen, gameStatus, tickTimer]);
 
   // Wrapped rollDice with sound
   const handleRollDice = useCallback(() => {
-    playSound('roll', mute);
+    play('diceRoll');
     rollDice();
-  }, [rollDice, mute]);
+  }, [rollDice, play]);
 
-  // CPU Player AI Loop
+  // Bot & Autoplay Player AI Loop
   useEffect(() => {
     if (activeGame !== 'LUDO' || currentScreen !== 'PLAYING') return;
     const activePlayer = players[activePlayerIndex];
-    if (!activePlayer || activePlayer.isHuman) return;
+    if (!activePlayer) return;
+
+    const isBotOrAutoplay = !activePlayer.isHuman || isAutoPlay[activePlayerIndex];
+    if (!isBotOrAutoplay) return;
 
     let timeoutId: number;
 
     if (gameStatus === 'WAITING_FOR_ROLL') {
       timeoutId = window.setTimeout(() => {
-        playSound('roll', mute);
+        play('diceRoll');
         rollDice();
       }, 1000);
     } else if (gameStatus === 'WAITING_FOR_MOVE') {
@@ -123,13 +142,13 @@ export default function App() {
     }
 
     return () => { if (timeoutId) window.clearTimeout(timeoutId); };
-  }, [currentScreen, activeGame, activePlayerIndex, gameStatus, validMoves, players, rollDice, selectToken, diceValue, mute]);
+  }, [currentScreen, activeGame, activePlayerIndex, gameStatus, validMoves, players, rollDice, selectToken, diceValue, play, isAutoPlay]);
 
   // Human Auto-Move hook: automatically select token if only 1 is playable
   useEffect(() => {
     if (activeGame !== 'LUDO' || currentScreen !== 'PLAYING') return;
     const activePlayer = players[activePlayerIndex];
-    if (!activePlayer || !activePlayer.isHuman) return;
+    if (!activePlayer || !activePlayer.isHuman || isAutoPlay[activePlayerIndex]) return;
 
     if (gameStatus === 'WAITING_FOR_MOVE' && validMoves.length === 1) {
       const timeoutId = window.setTimeout(() => {
@@ -137,7 +156,7 @@ export default function App() {
       }, 800); // 800ms delay so human can see what was rolled
       return () => window.clearTimeout(timeoutId);
     }
-  }, [currentScreen, activeGame, activePlayerIndex, gameStatus, validMoves, selectToken, players]);
+  }, [currentScreen, activeGame, activePlayerIndex, gameStatus, validMoves, selectToken, players, isAutoPlay]);
 
   const activePlayer = players[activePlayerIndex];
 
@@ -157,6 +176,7 @@ export default function App() {
 
   // Navigation handlers
   const handleBackToArena = () => {
+    play('buttonClick');
     resetGame();
     setActiveGame('ARENA');
   };
@@ -187,25 +207,49 @@ export default function App() {
       >
         <div className={`corner-dice-card ${isAct ? 'active' : ''}`}>
           <div className="corner-dice-profile">
-            <div className="corner-dice-name">{player.name}</div>
+            <div className="corner-dice-name" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', width: '100%' }}>
+              <span>{player.name.replace(/^(red|green|yellow|blue)\s+/i, '')}</span>
+              {isAct && isAutoPlay[player.id] && player.isHuman && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    play('buttonClick');
+                    resumeControl(player.id);
+                  }}
+                  style={{
+                    background: '#a855f7',
+                    color: '#fff',
+                    fontSize: '9px',
+                    fontWeight: 800,
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '4px',
+                    padding: '2px 6px',
+                    cursor: 'pointer',
+                    fontFamily: 'Outfit, sans-serif',
+                    textTransform: 'uppercase',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                  }}
+                >
+                  Resume
+                </button>
+              )}
+            </div>
             <div className="corner-dice-status">
               {!player.isHuman && <span className="corner-dice-badge">BOT</span>}
+              {player.isHuman && isAutoPlay[player.id] && (
+                <span className="corner-dice-badge" style={{ backgroundColor: '#ef4444', animation: 'pulse 1.2s infinite' }}>AUTO</span>
+              )}
+              {isAct && gameStatus !== 'GAME_OVER' && (
+                <span style={{ color: turnTimeLeft <= 4 ? '#f87171' : '#4ade80', fontWeight: 700, fontSize: '11px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                  ⏱️ {turnTimeLeft}s
+                </span>
+              )}
               <span>🏁 {home}/4</span>
             </div>
           </div>
           <div className="corner-dice-slot-box">
-            {isAct && gameStatus !== 'GAME_OVER' ? (
+            {isAct && gameStatus !== 'GAME_OVER' && (
               <Dice onRoll={handleRollDice} />
-            ) : (
-              /* Dimmed placeholder representing the waiting state */
-              <div style={{
-                width: '60%',
-                height: '60%',
-                borderRadius: '4px',
-                border: `1.5px solid ${cs.border}44`,
-                background: `${cs.border}0d`,
-                boxShadow: `inset 0 0 6px ${cs.border}11`
-              }} />
             )}
           </div>
         </div>
@@ -292,7 +336,10 @@ export default function App() {
                 {/* Controls (Right) */}
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <button
-                    onClick={toggleMute}
+                    onClick={() => {
+                      play('buttonClick');
+                      toggleMute();
+                    }}
                     title={mute ? 'Unmute' : 'Mute'}
                     style={{
                       background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
@@ -382,7 +429,7 @@ export default function App() {
                 {/* Action buttons */}
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
                   {lastMatchConfig && lastMatchConfig.length > 0 && (
-                    <button className="btn-primary" onClick={() => setupGame(lastMatchConfig)} style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1 }}>
+                    <button className="btn-primary" onClick={() => { play('buttonClick'); setupGame(lastMatchConfig); }} style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1 }}>
                       <Play size={16} /> Play Again
                     </button>
                   )}

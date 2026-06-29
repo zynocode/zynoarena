@@ -1,5 +1,7 @@
 import { create } from 'zustand';
-import { getTokenGridCoordinates, safeZonesGlobalIndices } from '../game/utils/boardCoordinates';
+import { safeZonesGlobalIndices } from '../game/utils/boardCoordinates';
+import { audio } from '../audio/AudioManager';
+import { server } from '../game/serverEngine';
 
 export type GameScreen = 'MENU' | 'SETUP' | 'PLAYING' | 'GAME_OVER';
 export type PlayerColor = 'red' | 'green' | 'yellow' | 'blue';
@@ -47,6 +49,11 @@ interface GameState {
   lastMatchConfig: ConfiguredPlayer[];
   actionLogs: string[];
   
+  // Security session & Autoplay States
+  sessionToken: string;
+  turnTimeLeft: number;
+  isAutoPlay: boolean[];
+
   // Actions
   setScreen: (screen: GameScreen) => void;
   setupGame: (configuredPlayers: ConfiguredPlayer[]) => void;
@@ -63,6 +70,8 @@ interface GameState {
   resetGame: () => void;
   getValidMoves: (playerIdx: number, roll: number) => number[];
   addActionLog: (msg: string) => void;
+  resumeControl: (playerIdx: number) => void;
+  tickTimer: () => void;
 }
 
 
@@ -80,31 +89,48 @@ export const useGameStore = create<GameState>((set, get) => ({
   lastActionNotice: 'NONE',
   lastMatchConfig: [],
   actionLogs: [],
+  
+  sessionToken: '',
+  turnTimeLeft: 15,
+  isAutoPlay: [false, false, false, false],
 
   setScreen: (screen) => set({ currentScreen: screen }),
   
   setupGame: (configuredPlayers) => {
-    const finalPlayers: Player[] = configuredPlayers.map((cp, idx) => ({
+    const token = server.initializeSession();
+    const serverPlayersInput = configuredPlayers.map((cp, idx) => ({
       id: idx,
       name: cp.name.trim() || (cp.isHuman ? `Player ${idx + 1}` : `CPU ${idx + 1}`),
       color: cp.color,
       isHuman: cp.isHuman,
-      difficulty: cp.difficulty,
-      tokens: [-1, -1, -1, -1],
+      difficulty: cp.difficulty
+    }));
+    const serverState = server.setupGame(serverPlayersInput, token);
+
+    const finalPlayers: Player[] = serverState.players.map((sp) => ({
+      id: sp.id,
+      name: sp.name,
+      color: sp.color as PlayerColor,
+      isHuman: sp.isHuman,
+      difficulty: sp.difficulty as AIDifficulty,
+      tokens: sp.tokens,
     }));
 
     set({
+      sessionToken: token,
       players: finalPlayers,
       lastMatchConfig: configuredPlayers,
-      activePlayerIndex: 0,
-      gameStatus: 'WAITING_FOR_ROLL',
-      diceValue: 1,
-      consecutiveSixes: 0,
+      activePlayerIndex: serverState.activePlayerIndex,
+      gameStatus: serverState.gameStatus,
+      diceValue: serverState.diceValue,
+      consecutiveSixes: serverState.consecutiveSixes,
       winner: null,
       validMoves: [],
       movingTokenInfo: null,
       lastActionNotice: 'NONE',
       currentScreen: 'PLAYING',
+      isAutoPlay: serverState.isAutoPlay,
+      turnTimeLeft: 15,
       actionLogs: ['📢 Match started! Get ready to roll.'],
     });
   },
@@ -135,53 +161,20 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   rollDice: () => {
-    const { activePlayerIndex, consecutiveSixes, getValidMoves, players } = get();
+    const { activePlayerIndex, sessionToken, players } = get();
     const activePlayer = players[activePlayerIndex];
     
     set({ gameStatus: 'ROLLING', lastActionNotice: 'NONE', diceValue: 0 });
     
-    // Adaptive Engagement Balancing Model
-    const calculateProgress = (p: typeof players[0]) => {
-      return p.tokens.reduce((sum, pos) => sum + (pos === -1 ? 0 : pos), 0);
-    };
-
-    const activeProgress = calculateProgress(activePlayer);
-    let maxOpponentProgress = 0;
-    players.forEach((p, idx) => {
-      if (idx !== activePlayerIndex) {
-        maxOpponentProgress = Math.max(maxOpponentProgress, calculateProgress(p));
-      }
-    });
-
-    const isLaggingBehind = maxOpponentProgress - activeProgress > 40;
-    
-    let roll = 1;
-    if (isLaggingBehind) {
-      // 30% chance for a 6, 70% shared equally between 1-5 (14% each)
-      const rand = Math.random();
-      if (rand < 0.30) {
-        roll = 6;
-      } else {
-        roll = Math.floor((rand - 0.30) / 0.14) + 1;
-        if (roll > 5) roll = 5;
-      }
-    } else {
-      // Pure PRNG Model (16.67% each)
-      roll = Math.floor(Math.random() * 6) + 1;
-    }
-    
-    let newConsecutive = 0;
-    if (roll === 6) {
-      newConsecutive = consecutiveSixes + 1;
-    }
+    const rollResult = server.requestRoll(sessionToken);
 
     setTimeout(() => {
-      get().addActionLog(`🎲 ${activePlayer.name} rolled a ${roll}`);
+      get().addActionLog(`🎲 ${activePlayer.name} rolled a ${rollResult.roll}`);
 
-      if (newConsecutive === 3) {
-        get().addActionLog(`⚠️ ${activePlayer.name} rolled three 6s! Turn voided.`);
+      if (rollResult.isThreeSixesForfeited) {
+        get().addActionLog(`⚠️ ${activePlayer.name} rolled three 6s! Turn forfeited.`);
         set({
-          diceValue: roll,
+          diceValue: rollResult.roll,
           consecutiveSixes: 0,
           validMoves: [],
           lastActionNotice: 'THREE_SIXES',
@@ -194,17 +187,16 @@ export const useGameStore = create<GameState>((set, get) => ({
         return;
       }
 
-      const valid = getValidMoves(activePlayerIndex, roll);
-
       set({
-        diceValue: roll,
-        consecutiveSixes: newConsecutive,
-        validMoves: valid,
-        lastActionNotice: valid.length === 0 ? 'NO_MOVES' : 'NONE',
-        gameStatus: valid.length > 0 ? 'WAITING_FOR_MOVE' : 'CHECKING_RULES'
+        diceValue: rollResult.roll,
+        consecutiveSixes: rollResult.roll === 6 ? get().consecutiveSixes + 1 : 0,
+        validMoves: rollResult.validMoves,
+        lastActionNotice: rollResult.validMoves.length === 0 ? 'NO_MOVES' : 'NONE',
+        gameStatus: rollResult.validMoves.length > 0 ? 'WAITING_FOR_MOVE' : 'CHECKING_RULES',
+        turnTimeLeft: 15
       });
 
-      if (valid.length === 0) {
+      if (rollResult.validMoves.length === 0) {
         get().addActionLog(`❌ ${activePlayer.name} has no valid moves.`);
         setTimeout(() => {
           get().nextTurn();
@@ -214,17 +206,15 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   selectToken: (tokenIdx) => {
-    const { players, activePlayerIndex, diceValue } = get();
+    const { activePlayerIndex, sessionToken, players } = get();
     const activePlayer = players[activePlayerIndex];
-    const currentPos = activePlayer.tokens[tokenIdx];
     
-    let targetPos = currentPos;
-    if (currentPos === -1) {
-      targetPos = 0;
+    const moveRes = server.requestMove(tokenIdx, sessionToken);
+
+    if (moveRes.startPos === -1) {
       get().addActionLog(`🚀 ${activePlayer.name} released a token to start`);
     } else {
-      targetPos = currentPos + diceValue;
-      get().addActionLog(`🏃 ${activePlayer.name} moved a token ${diceValue} spaces`);
+      get().addActionLog(`🏃 ${activePlayer.name} moved a token ${get().diceValue} spaces`);
     }
 
     set({
@@ -233,61 +223,54 @@ export const useGameStore = create<GameState>((set, get) => ({
       movingTokenInfo: {
         playerIdx: activePlayerIndex,
         tokenIdx,
-        startPos: currentPos,
-        endPos: targetPos
+        startPos: moveRes.startPos,
+        endPos: moveRes.endPos
       }
     });
   },
 
   completeMove: () => {
-    const { movingTokenInfo, players, diceValue } = get();
+    const { movingTokenInfo, players } = get();
     if (!movingTokenInfo) return;
 
-    const { playerIdx, tokenIdx, endPos } = movingTokenInfo;
-    
-    const updatedPlayers = players.map((p, idx) => {
-      if (idx !== playerIdx) return p;
-      const updatedTokens = [...p.tokens];
-      updatedTokens[tokenIdx] = endPos;
-      return { ...p, tokens: updatedTokens };
-    });
+    const { playerIdx, endPos } = movingTokenInfo;
+    const serverState = server.getState();
 
-    const targetCoord = getTokenGridCoordinates(playerIdx, endPos, tokenIdx);
     let capturedOpponent = false;
     let capturedPlayerName = 'Opponent';
 
-    const finalPlayers = updatedPlayers.map((p, pIdx) => {
-      if (pIdx === playerIdx) return p;
-
-      const updatedTokens = p.tokens.map((pos, tIdx) => {
-        if (pos >= 0 && pos <= 50) {
-          const coord = getTokenGridCoordinates(pIdx, pos, tIdx);
-          
-          if (coord.x === targetCoord.x && coord.y === targetCoord.y) {
-            const globalIdx = (startIndices[pIdx] + pos) % 52;
-            const isSafe = safeZonesGlobalIndices.includes(globalIdx);
-            
-            if (!isSafe) {
-              capturedOpponent = true;
-              capturedPlayerName = p.name;
-              return -1;
-            }
+    const prevOpponentStates = players.map(p => [...p.tokens]);
+    serverState.players.forEach((sp, spIdx) => {
+      if (spIdx !== playerIdx) {
+        sp.tokens.forEach((pos, tIdx) => {
+          if (pos === -1 && prevOpponentStates[spIdx][tIdx] !== -1) {
+            capturedOpponent = true;
+            capturedPlayerName = sp.name;
           }
-        }
-        return pos;
-      });
-
-      return { ...p, tokens: updatedTokens };
+        });
+      }
     });
 
     if (capturedOpponent) {
-      get().addActionLog(`💥 ${finalPlayers[playerIdx].name} captured ${capturedPlayerName}!`);
+      get().addActionLog(`💥 ${serverState.players[playerIdx].name} captured ${capturedPlayerName}!`);
+      audio.play('tokenKill');
     }
 
-    const hasWon = finalPlayers[playerIdx].tokens.every(pos => pos === 56);
+    const hasWon = serverState.winnerId !== -1;
 
     if (hasWon) {
-      get().addActionLog(`🏆 ${finalPlayers[playerIdx].name} has WON the match!`);
+      get().addActionLog(`🏆 ${serverState.players[playerIdx].name} has WON the match!`);
+      audio.play('gameWin');
+
+      const finalPlayers: Player[] = serverState.players.map((sp) => ({
+        id: sp.id,
+        name: sp.name,
+        color: sp.color as PlayerColor,
+        isHuman: sp.isHuman,
+        difficulty: sp.difficulty as AIDifficulty,
+        tokens: sp.tokens,
+      }));
+
       set({
         players: finalPlayers,
         movingTokenInfo: null,
@@ -299,18 +282,35 @@ export const useGameStore = create<GameState>((set, get) => ({
     }
 
     if (endPos === 56) {
-      get().addActionLog(`🎉 ${finalPlayers[playerIdx].name} got a token home!`);
+      get().addActionLog(`🎉 ${serverState.players[playerIdx].name} got a token home!`);
+      audio.play('tokenHome');
+    } else if (!capturedOpponent && endPos >= 0 && endPos <= 50) {
+      const landedGlobalIdx = (startIndices[playerIdx] + endPos) % 52;
+      if (safeZonesGlobalIndices.includes(landedGlobalIdx)) {
+        audio.play('safeCell');
+      }
     }
 
-    const extraTurn = (diceValue === 6 && get().consecutiveSixes < 3) || capturedOpponent;
+    const extraTurn = (get().diceValue === 6 && serverState.consecutiveSixes > 0) || capturedOpponent || endPos === 56;
 
     if (extraTurn) {
       if (capturedOpponent) {
-        get().addActionLog(`🔄 ${finalPlayers[playerIdx].name} gets an extra turn for capturing!`);
+        get().addActionLog(`🔄 ${serverState.players[playerIdx].name} gets an extra turn for capturing!`);
+      } else if (endPos === 56) {
+        get().addActionLog(`🔄 ${serverState.players[playerIdx].name} gets an extra turn for bringing token home!`);
       } else {
-        get().addActionLog(`🔄 ${finalPlayers[playerIdx].name} gets an extra turn for rolling a 6!`);
+        get().addActionLog(`🔄 ${serverState.players[playerIdx].name} gets an extra turn for rolling a 6!`);
       }
     }
+
+    const finalPlayers: Player[] = serverState.players.map((sp) => ({
+      id: sp.id,
+      name: sp.name,
+      color: sp.color as PlayerColor,
+      isHuman: sp.isHuman,
+      difficulty: sp.difficulty as AIDifficulty,
+      tokens: sp.tokens,
+    }));
 
     set({
       players: finalPlayers,
@@ -321,24 +321,37 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     setTimeout(() => {
       if (extraTurn) {
-        set({ gameStatus: 'WAITING_FOR_ROLL' });
+        set({ gameStatus: 'WAITING_FOR_ROLL', turnTimeLeft: 15 });
       } else {
         get().nextTurn();
       }
     }, 1200);
   },
   
-  nextTurn: () => set((state) => {
-    const nextIdx = (state.activePlayerIndex + 1) % state.players.length;
-    return {
-      activePlayerIndex: nextIdx,
-      gameStatus: 'WAITING_FOR_ROLL',
-      consecutiveSixes: 0,
+  nextTurn: () => {
+    const { sessionToken } = get();
+    const serverState = server.nextTurn(sessionToken);
+
+    const finalPlayers: Player[] = serverState.players.map((sp) => ({
+      id: sp.id,
+      name: sp.name,
+      color: sp.color as PlayerColor,
+      isHuman: sp.isHuman,
+      difficulty: sp.difficulty as AIDifficulty,
+      tokens: sp.tokens,
+    }));
+
+    set({
+      players: finalPlayers,
+      activePlayerIndex: serverState.activePlayerIndex,
+      gameStatus: serverState.gameStatus,
+      consecutiveSixes: serverState.consecutiveSixes,
       validMoves: [],
       movingTokenInfo: null,
-      lastActionNotice: 'NONE'
-    };
-  }),
+      lastActionNotice: 'NONE',
+      turnTimeLeft: 15
+    });
+  },
 
   setWinner: (player) => set({ winner: player, currentScreen: 'GAME_OVER' }),
   toggleMute: () => set((state) => ({ mute: !state.mute })),
@@ -355,11 +368,86 @@ export const useGameStore = create<GameState>((set, get) => ({
     lastActionNotice: 'NONE',
     currentScreen: 'MENU',
     actionLogs: [],
+    sessionToken: '',
+    turnTimeLeft: 15,
+    isAutoPlay: [false, false, false, false],
   }),
 
   addActionLog: (msg) => set((state) => ({
     actionLogs: [msg, ...state.actionLogs].slice(0, 15)
   })),
+
+  resumeControl: (playerIdx) => {
+    const { sessionToken } = get();
+    server.resumeControl(playerIdx, sessionToken);
+    const serverState = server.getState();
+    set({
+      isAutoPlay: serverState.isAutoPlay
+    });
+    get().addActionLog(`🎮 ${serverState.players[playerIdx].name} resumed control.`);
+  },
+
+  tickTimer: () => {
+    const { gameStatus, sessionToken, activePlayerIndex, players, selectToken } = get();
+    if (gameStatus !== 'WAITING_FOR_ROLL' && gameStatus !== 'WAITING_FOR_MOVE') return;
+
+    const newTime = get().turnTimeLeft - 1;
+    if (newTime > 0) {
+      set({ turnTimeLeft: newTime });
+      return;
+    }
+
+    // Time ran out!
+    get().addActionLog(`⏱️ Time's up for ${players[activePlayerIndex].name}!`);
+    const timeoutRes = server.handleTimeout(sessionToken);
+    const serverState = server.getState();
+
+    set({
+      isAutoPlay: serverState.isAutoPlay,
+      turnTimeLeft: 15
+    });
+
+    if (serverState.isAutoPlay[activePlayerIndex] && players[activePlayerIndex].isHuman) {
+      get().addActionLog(`⚠️ Auto-play activated for ${players[activePlayerIndex].name}!`);
+    }
+
+    // Perform autoplay next steps
+    if (timeoutRes.autoPlayed) {
+      if (timeoutRes.nextAction === 'ROLL') {
+        get().rollDice();
+      } else if (timeoutRes.nextAction === 'MOVE') {
+        const rollRes = serverState.diceValue;
+        const valid = serverState.players[activePlayerIndex].tokens.map((pos, idx) => {
+          if (pos === -1) {
+            if (rollRes === 6) return idx;
+          } else if (pos === 56) {
+            // home
+          } else if (pos + rollRes <= 56) {
+            return idx;
+          }
+          return -1;
+        }).filter(idx => idx !== -1);
+
+        if (valid.length > 0) {
+          // Weighted choice: prioritize tokens closer to home stretch, or releasing a token
+          let bestIdx = valid[0];
+          let maxPos = -2;
+          valid.forEach(idx => {
+            const pos = serverState.players[activePlayerIndex].tokens[idx];
+            if (pos > maxPos) {
+              maxPos = pos;
+              bestIdx = idx;
+            }
+          });
+          selectToken(bestIdx);
+        } else {
+          get().nextTurn();
+        }
+      }
+    } else {
+      get().nextTurn();
+    }
+  },
 }));
 
 const startIndices = [0, 13, 26, 39];

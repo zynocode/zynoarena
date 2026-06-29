@@ -32,7 +32,7 @@ Play offline. No accounts. No installs. Just open and play.
 |---|---|
 | 🧠 AI Difficulty | Easy · Medium · Hard (weighted scoring matrix) |
 | 👥 Game Modes | 1v1 · 1v2 · 1v3 (Human vs CPU) |
-| 🎵 Sound Effects | Procedural Web Audio API (zero asset files) |
+| 🎵 Sound Effects | Hybrid (Web Audio API + CC0 Dice Roll OGG) |
 | 📱 Responsive | Scales from 360px mobile to 1440px desktop |
 | 🌐 Offline | Zero network dependency after load |
 | ⚡ Tech Stack | React 19 + Vite 8 + TypeScript + Phaser 4 + Zustand |
@@ -90,7 +90,7 @@ Frontend     →  React 19 + TypeScript 5.x + Vite 8
 Game Engine  →  Phaser 4 (canvas rendering, tweens, physics, input)
 State        →  Zustand 5 (reactive game state)
 Styling      →  Vanilla CSS (glassmorphism dark theme, clamp() responsive)
-Audio        →  Web Audio API (procedural synthesis, zero assets)
+Audio        →  Hybrid (Web Audio API + Real CC0 Dice Roll OGG)
 Linting      →  oxlint (fast Rust-based linter)
 Build        →  Vite + Rolldown
 ```
@@ -166,11 +166,13 @@ The engine returns the **highest-scoring legal move** deterministically (no RNG 
 zynoarena/
 ├── public/                  # Static assets
 ├── src/
-│   ├── assets/              # Images, icons
+│   ├── assets/              # Images, icons, audio (.ogg)
+│   ├── audio/               # Secure AudioManager, synths, and audio hook
 │   ├── components/          # React UI components (Dice, MainMenu, Lobby)
 │   ├── game/
-│   │   ├── scenes/          # Phaser scenes (MainScene, GameOver)
-│   │   └── utils/           # Board coordinates, AI engine, Audio API
+│   │   ├── scenes/          # Phaser scenes (MainScene)
+│   │   ├── utils/           # Board coordinates, AI engine
+│   │   └── serverEngine.ts  # Authoritative backend & memory encryption engine
 │   ├── store/               # Zustand game state slices
 │   ├── App.tsx              # Root layout + CPU scheduler
 │   ├── main.tsx             # React entry point

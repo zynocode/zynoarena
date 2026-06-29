@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { useGameStore } from '../../store/gameStore';
 import type { Player } from '../../store/gameStore';
 import { getTokenGridCoordinates, gridToPixel, safeZonesGlobalIndices, globalPath, baseCoords } from '../utils/boardCoordinates';
-import { playSound } from '../utils/audioEngine';
+import { audio } from '../../audio/AudioManager';
 
 export default class MainScene extends Phaser.Scene {
   private tokenSprites: Map<string, Phaser.GameObjects.Container> = new Map();
@@ -350,10 +350,7 @@ export default class MainScene extends Phaser.Scene {
         if (Math.abs(container.x - finalX) > 2 || Math.abs(container.y - finalY) > 2) {
           // If token sent back to base (-1) from the board, play spin-shrink capture respawn animation
           if (position === -1 && !this.isInitializing) {
-            // Play capture sound effect
-            const { mute } = useGameStore.getState();
-            playSound('capture', mute);
-
+            // Capture sound is fired from the store at the exact collision moment.
             this.tweens.add({
               targets: container,
               scale: 0,
@@ -482,9 +479,8 @@ export default class MainScene extends Phaser.Scene {
         duration: 180,
         ease: 'Quad.easeInOut',
         onComplete: () => {
-          // Play tick sound per step
-          const { mute } = useGameStore.getState();
-          playSound('tick', mute);
+          // One wooden tick per cell, synced to each hop's arrival
+          audio.play('tokenStep');
 
           // Subtle compression scale tick for squishy visual feel!
           this.tweens.add({
