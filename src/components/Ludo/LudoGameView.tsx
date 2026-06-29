@@ -316,85 +316,49 @@ export default function LudoGameView({ onExit }: { onExit: () => void }) {
 
             {/* Game Title Logo (Center) */}
             <div style={{
-              padding: '0', gap: '0', position: 'relative',
+              fontSize: '14px',
+              fontWeight: 800,
+              fontFamily: 'Outfit, sans-serif',
+              color: '#94a3b8',
+              letterSpacing: '0.5px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
             }}>
+              <span>🎲</span> Ludo Royale
+            </div>
 
-              {/* ── Top Header Bar ── */}
-              <div style={{
-                width: '100%',
-                height: '52px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0 20px',
-                background: 'rgba(10, 18, 35, 0.65)',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                backdropFilter: 'blur(16px)',
-                zIndex: 300,
-                boxSizing: 'border-box',
-                flexShrink: 0
-              }}>
-                {/* Active Player Turn Status */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{
-                    width: '7px', height: '7px', borderRadius: '50%',
-                    background: colorStyle(activePlayer?.color ?? 'blue').border,
-                    boxShadow: `0 0 10px ${colorStyle(activePlayer?.color ?? 'blue').border}`,
-                    animation: 'pulse 1.2s infinite', display: 'inline-block',
-                  }} />
-                  <span style={{
-                    fontFamily: "'Chakra Petch', 'Outfit', sans-serif",
-                    fontSize: '13px', fontWeight: 700, color: '#fff', letterSpacing: '0.3px'
-                  }}>
-                    {activePlayer?.name}'s Turn
-                  </span>
-                </div>
-
-                {/* Game Title Logo (Center) */}
-                <div style={{
-                  fontSize: '14px',
-                  fontWeight: 800,
-                  fontFamily: 'Outfit, sans-serif',
-                  color: '#94a3b8',
-                  letterSpacing: '0.5px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}>
-                  <span>🎲</span> Ludo Royale
-                </div>
-
-                {/* Controls (Right) */}
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <button
-                    onClick={() => {
-                      play('buttonClick');
-                      toggleMute();
-                    }}
-                    title={mute ? 'Unmute' : 'Mute'}
-                    style={{
-                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer',
-                      color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    {mute ? <VolumeX size={13} /> : <Volume2 size={13} />}
-                  </button>
-                  <button
-                    onClick={handleBackToArena}
-                    style={{
-                      background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)',
-                      borderRadius: '8px', padding: '5px 12px', cursor: 'pointer',
-                      color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px',
-                      fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px',
-                      transition: 'all 0.2s ease', fontFamily: "'Chakra Petch', sans-serif",
-                    }}
-                  >
-                    <ArrowLeft size={11} /> Exit
-                  </button>
-                </div>
-              </div>
+            {/* Controls (Right) */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button
+                onClick={() => {
+                  play('buttonClick');
+                  toggleMute();
+                }}
+                title={mute ? 'Unmute' : 'Mute'}
+                style={{
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer',
+                  color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {mute ? <VolumeX size={13} /> : <Volume2 size={13} />}
+              </button>
+              <button
+                onClick={handleBackToArena}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)',
+                  borderRadius: '8px', padding: '5px 12px', cursor: 'pointer',
+                  color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px',
+                  fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px',
+                  transition: 'all 0.2s ease', fontFamily: "'Chakra Petch', sans-serif",
+                }}
+              >
+                <ArrowLeft size={11} /> Exit
+              </button>
+            </div>
+          </div>
 
               {/* Main Content Area */}
               <div style={{
@@ -471,8 +435,7 @@ export default function LudoGameView({ onExit }: { onExit: () => void }) {
               </div>
             </>
           )}
-        </div>
-      )}
+    </div>
     </div>
   );
 }
