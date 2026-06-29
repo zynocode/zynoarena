@@ -15,8 +15,8 @@
 [![Last Commit](https://img.shields.io/github/last-commit/zynocode/openboard-arcade?style=flat-square)](https://github.com/zynocode/openboard-arcade/commits/main)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 
-**An open-source collection of modern, AI-powered browser games.**
-Play offline. No accounts. No installs. Just open and play.
+**A premium open-source collection of multiplayer browser board games and retro minigames built with React 19, Phaser 4, and TypeScript. Offline-first, zero install.**
+Play offline instantly. No accounts. No downloads. Just open the browser and play.
 
 [🕹️ Play Now →](https://github.com/zynocode/openboard-arcade) &nbsp;·&nbsp; [🐛 Report Bug](https://github.com/zynocode/openboard-arcade/issues/new?labels=bug) &nbsp;·&nbsp; [💡 Request Feature](https://github.com/zynocode/openboard-arcade/issues/new?labels=enhancement) &nbsp;·&nbsp; [🤝 Contribute](CONTRIBUTING.md)
 
@@ -24,7 +24,7 @@ Play offline. No accounts. No installs. Just open and play.
 
 ---
 
-## 🎲 Current Game — Ludo Royale
+## 🎲 Ludo Royale – Multiplayer Browser Board Game
 
 > A fully-featured Ludo game with intelligent CPU opponents, smooth animations, and a premium dark glassmorphism UI.
 
@@ -67,7 +67,7 @@ Play offline. No accounts. No installs. Just open and play.
 - [x] Game Over confetti + medal scoreboard
 - [x] Local multiplayer with custom player names
 
-### 🔜 v2.0.0 — Coming Soon
+### 🔜 Upcoming Games & Features (Chess, Snake & Ladder, Sudoku)
 
 | Game | Status | Priority |
 |---|---|---|
