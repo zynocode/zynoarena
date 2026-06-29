@@ -285,7 +285,8 @@ export const useGameStore = create<GameState>((set, get) => ({
       get().addActionLog(`🎉 ${serverState.players[playerIdx].name} got a token home!`);
       audio.play('tokenHome');
     } else if (!capturedOpponent && endPos >= 0 && endPos <= 50) {
-      const landedGlobalIdx = (startIndices[playerIdx] + endPos) % 52;
+      const colorIdx = ['red', 'green', 'yellow', 'blue'].indexOf(players[playerIdx].color);
+      const landedGlobalIdx = (startIndices[colorIdx] + endPos) % 52;
       if (safeZonesGlobalIndices.includes(landedGlobalIdx)) {
         audio.play('safeCell');
       }

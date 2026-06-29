@@ -73,6 +73,7 @@ export interface ServerState {
 
 const startIndices = [0, 13, 26, 39];
 const safeZonesGlobalIndices = [0, 8, 13, 21, 26, 34, 39, 47];
+const colorToIndex: Record<string, number> = { red: 0, green: 1, yellow: 2, blue: 3 };
 
 class ServerEngine {
   private securePlayers: { tokens: SecureValue<number>[] }[] = [];
@@ -241,14 +242,16 @@ class ServerEngine {
 
     activeTokens.forEach(pos => {
       if (pos >= 0 && pos <= 50) {
-        const actGlobal = (startIndices[activeIdx] + pos) % 52;
+        const activeColorIdx = colorToIndex[this.playerMeta[activeIdx].color];
+        const actGlobal = (startIndices[activeColorIdx] + pos) % 52;
         
         this.securePlayers.forEach((opp, oppIdx) => {
           if (oppIdx !== activeIdx) {
             opp.tokens.forEach(oppPos => {
               const oPos = oppPos.get();
               if (oPos >= 0 && oPos <= 50) {
-                const oppGlobal = (startIndices[oppIdx] + oPos) % 52;
+                const oppColorIdx = colorToIndex[this.playerMeta[oppIdx].color];
+                const oppGlobal = (startIndices[oppColorIdx] + oPos) % 52;
                 const isSafe = safeZonesGlobalIndices.includes(oppGlobal);
                 
                 if (!isSafe) {
@@ -344,7 +347,8 @@ class ServerEngine {
     // Resolve collision captures
     let captures = false;
     if (targetPos >= 0 && targetPos <= 50) {
-      const activeGlobal = (startIndices[activeIdx] + targetPos) % 52;
+      const activeColorIdx = colorToIndex[this.playerMeta[activeIdx].color];
+      const activeGlobal = (startIndices[activeColorIdx] + targetPos) % 52;
       const isSafe = safeZonesGlobalIndices.includes(activeGlobal);
 
       if (!isSafe) {
@@ -353,7 +357,8 @@ class ServerEngine {
             opp.tokens.forEach((oppToken) => {
               const oppPos = oppToken.get();
               if (oppPos >= 0 && oppPos <= 50) {
-                const oppGlobal = (startIndices[oppIdx] + oppPos) % 52;
+                const oppColorIdx = colorToIndex[this.playerMeta[oppIdx].color];
+                const oppGlobal = (startIndices[oppColorIdx] + oppPos) % 52;
                 if (oppGlobal === activeGlobal) {
                   // Capture opponent! Reset to base (-1)
                   oppToken.set(-1);
