@@ -1,6 +1,6 @@
 ---
 name: 🎮 New Game Proposal
-about: Propose adding a new game to ZynoArena
+about: Propose adding a new game to OpenBoard Arcade
 title: "[GAME] "
 labels: game, enhancement
 assignees: ''

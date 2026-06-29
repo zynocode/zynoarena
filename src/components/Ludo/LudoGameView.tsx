@@ -267,7 +267,7 @@ export default function LudoGameView({ onExit }: { onExit: () => void }) {
 
   return (
     <div style={{ position: 'relative', width: '100%', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-    <div className="app-container">
+    <div className={`app-container ${currentScreen === 'PLAYING' ? 'playing-full-bleed' : ''}`}>
       {/* Background layer */}
       <div className="bg-animation" />
 
