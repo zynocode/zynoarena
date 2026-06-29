@@ -28,7 +28,7 @@ const gamesList: GameItem[] = [
     title: 'Chess Pro',
     description: 'Play with strong AI bot or local offline friend. Complete move history log, checkmate highlights.',
     icon: '♟',
-    status: 'upcoming',
+    status: 'playable',
     tags: ['AI', 'Strategy', '2 Players'],
     accentColor: '#f59e0b',
     glowColor: 'rgba(245, 158, 11, 0.25)',

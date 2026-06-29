@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useGameStore } from './store/gameStore';
 import ArenaPortal from './components/ArenaPortal';
+import { ChessGame } from './components/Chess/ChessGame';
 import MainMenu from './components/MainMenu';
 import Dice from './components/Dice';
 import { initLudoGame } from './game/LudoGame';
@@ -46,7 +47,7 @@ function Confetti() {
 
 // =========================================================================
 export default function App() {
-  const [activeGame, setActiveGame] = useState<'ARENA' | 'LUDO'>('ARENA');
+  const [activeGame, setActiveGame] = useState<'ARENA' | 'LUDO' | 'CHESS'>('ARENA');
   const { play } = useAudio();
 
   const { 
@@ -268,6 +269,8 @@ export default function App() {
         <ArenaPortal onSelectGame={(gameId) => {
           if (gameId === 'ludo') {
             setActiveGame('LUDO');
+          } else if (gameId === 'chess') {
+            setActiveGame('CHESS');
           }
         }} />
       )}
@@ -441,6 +444,11 @@ export default function App() {
             </>
           )}
         </div>
+      )}
+
+      {/* CHESS GAME MODULE */}
+      {activeGame === 'CHESS' && (
+        <ChessGame onBackToLobby={() => setActiveGame('ARENA')} />
       )}
     </div>
   );

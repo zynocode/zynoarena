@@ -204,3 +204,80 @@ export function renderPopupClose(sampleRate: number): Promise<AudioBuffer> {
     tone(ctx, { type: 'triangle', freq: 1520, freqEnd: 680, start: 0, dur: 0.1, gain: 0.06, attack: 0.004 });
   });
 }
+
+/** Soft wooden chess move click (~80ms). */
+export function renderChessMove(sampleRate: number): Promise<AudioBuffer> {
+  return render(sampleRate, 0.1, (ctx) => {
+    tone(ctx, { type: 'sine', freq: 160, freqEnd: 90, start: 0, dur: 0.08, gain: 0.4, attack: 0.002 });
+    noise(ctx, { start: 0, dur: 0.02, gain: 0.08, filter: 'lowpass', freq: 1800, q: 0.8, decay: 4 });
+  });
+}
+
+/** Snappy chess capture wood impact (~150ms). */
+export function renderChessCapture(sampleRate: number): Promise<AudioBuffer> {
+  return render(sampleRate, 0.18, (ctx) => {
+    tone(ctx, { type: 'sine', freq: 180, freqEnd: 70, start: 0, dur: 0.15, gain: 0.55, attack: 0.001 });
+    tone(ctx, { type: 'triangle', freq: 360, freqEnd: 120, start: 0, dur: 0.1, gain: 0.25, attack: 0.001 });
+    noise(ctx, { start: 0, dur: 0.08, gain: 0.2, filter: 'bandpass', freq: 1000, q: 1, decay: 3 });
+  });
+}
+
+/** Sliding dual-wood castle sound (~250ms). */
+export function renderChessCastle(sampleRate: number): Promise<AudioBuffer> {
+  return render(sampleRate, 0.25, (ctx) => {
+    // King slide
+    tone(ctx, { type: 'sine', freq: 150, freqEnd: 100, start: 0, dur: 0.12, gain: 0.4, attack: 0.005 });
+    noise(ctx, { start: 0, dur: 0.08, gain: 0.06, filter: 'lowpass', freq: 1200, decay: 2 });
+    // Rook slide slightly delayed
+    tone(ctx, { type: 'sine', freq: 130, freqEnd: 90, start: 0.06, dur: 0.12, gain: 0.35, attack: 0.005 });
+    noise(ctx, { start: 0.06, dur: 0.08, gain: 0.06, filter: 'lowpass', freq: 1000, decay: 2 });
+  });
+}
+
+/** Chime warning chord for check state (~400ms). */
+export function renderChessCheck(sampleRate: number): Promise<AudioBuffer> {
+  return render(sampleRate, 0.45, (ctx) => {
+    tone(ctx, { type: 'sine', freq: 1046.5, start: 0, dur: 0.4, gain: 0.2, attack: 0.01 });
+    tone(ctx, { type: 'sine', freq: 1318.51, start: 0, dur: 0.4, gain: 0.15, attack: 0.01 });
+    tone(ctx, { type: 'triangle', freq: 523.25, start: 0, dur: 0.4, gain: 0.08, attack: 0.01 });
+  });
+}
+
+/** Low thud + minor chord checkmate orchestra hit (~1.5s). */
+export function renderChessCheckmate(sampleRate: number): Promise<AudioBuffer> {
+  return render(sampleRate, 1.5, (ctx) => {
+    tone(ctx, { type: 'sine', freq: 110, freqEnd: 55, start: 0, dur: 0.6, gain: 0.6, attack: 0.002 });
+    noise(ctx, { start: 0, dur: 0.3, gain: 0.25, filter: 'lowpass', freq: 500, decay: 2 });
+    [220, 261.63, 329.63].forEach((f) => {
+      tone(ctx, { type: 'sawtooth', freq: f, start: 0.1, dur: 1.2, gain: 0.1, attack: 0.05 });
+    });
+  });
+}
+
+/** Soft double tone neutral chime for draw state (~500ms). */
+export function renderChessDraw(sampleRate: number): Promise<AudioBuffer> {
+  return render(sampleRate, 0.5, (ctx) => {
+    tone(ctx, { type: 'sine', freq: 880, start: 0, dur: 0.45, gain: 0.18, attack: 0.01 });
+    tone(ctx, { type: 'sine', freq: 739.99, start: 0.08, dur: 0.38, gain: 0.14, attack: 0.01 });
+  });
+}
+
+/** Magical ascending scale pop for pawn promotion (~600ms). */
+export function renderChessPromotion(sampleRate: number): Promise<AudioBuffer> {
+  return render(sampleRate, 0.6, (ctx) => {
+    const scale = [N.C5, N.E5, N.G5, N.C6, N.E6];
+    scale.forEach((f, i) => {
+      const t = i * 0.06;
+      tone(ctx, { type: 'triangle', freq: f, start: t, dur: 0.25, gain: 0.16 });
+    });
+    noise(ctx, { start: 0.15, dur: 0.4, gain: 0.05, filter: 'highpass', freq: 8000, decay: 1.5 });
+  });
+}
+
+/** Short muted thud for invalid chess operations (~60ms). */
+export function renderChessIllegal(sampleRate: number): Promise<AudioBuffer> {
+  return render(sampleRate, 0.06, (ctx) => {
+    tone(ctx, { type: 'sine', freq: 90, freqEnd: 60, start: 0, dur: 0.05, gain: 0.3, attack: 0.001 });
+  });
+}
+

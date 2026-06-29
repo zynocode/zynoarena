@@ -13,7 +13,15 @@ export type SoundId =
   | 'gameWin'
   | 'buttonClick'
   | 'popupOpen'
-  | 'popupClose';
+  | 'popupClose'
+  | 'chessMove'
+  | 'chessCapture'
+  | 'chessCastle'
+  | 'chessCheck'
+  | 'chessCheckmate'
+  | 'chessDraw'
+  | 'chessPromotion'
+  | 'chessIllegal';
 
 /** How a sound's AudioBuffer is produced. */
 export type SoundKind = 'file' | 'synth';
