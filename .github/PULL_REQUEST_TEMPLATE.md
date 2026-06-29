@@ -1,39 +1,24 @@
-## 📋 Pull Request Description
+## Description
+Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context.
 
-<!-- Describe what this PR does and why -->
+Fixes # (issue)
 
-## 🔗 Related Issue
-Closes #<!-- issue number -->
+## Type of change
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] This change requires a documentation update
 
-## 🔄 Type of Change
-- [ ] 🐛 Bug fix
-- [ ] ✨ New feature
-- [ ] 🎮 New game
-- [ ] 🧠 AI improvement
-- [ ] 🎨 UI/UX change
-- [ ] ⚡ Performance improvement
-- [ ] 📚 Documentation
-- [ ] 🧹 Refactor / cleanup
-- [ ] 📦 Dependency update
+## How Has This Been Tested?
+Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce.
 
-## 🧪 How Has This Been Tested?
-Describe how you tested your changes:
-- [ ] Manual testing in Chrome
-- [ ] Manual testing in Firefox
-- [ ] Mobile responsive check
-- [ ] `npm run lint` passes
-- [ ] `npm run build` succeeds
+- [ ] Test A
+- [ ] Test B
 
-## 📸 Screenshots / Demo
-<!-- Add screenshots or a GIF for UI changes -->
-
-## ✅ Checklist
-- [ ] My code follows the project's style guidelines
-- [ ] I've run `npm run lint` and it passes
-- [ ] I've run `npm run build` and it succeeds
-- [ ] I've added/updated documentation if needed
-- [ ] My PR title follows [Conventional Commits](https://www.conventionalcommits.org/)
-- [ ] I've linked the related issue above
-
-## 💬 Additional Notes
-<!-- Any other context, design decisions, or notes for the reviewer -->
+## Checklist:
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] Any dependent changes have been merged and published in downstream modules

@@ -1,32 +1,19 @@
 ---
-name: 💡 Feature Request
-about: Suggest an idea or improvement
-title: "[FEAT] "
+name: Feature request
+about: Suggest an idea for Zyno Arena
+title: '[FEATURE] '
 labels: enhancement
 assignees: ''
 ---
 
-## 💡 Feature Description
-A clear and concise description of the feature you'd like.
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-## 🎯 Problem it Solves
-What problem does this feature solve? Why is it needed?
-> e.g. "I'm frustrated when [...] because [...]"
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
 
-## 🛠️ Proposed Solution
-Describe the solution you'd like in detail.
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
 
-## 🔄 Alternatives Considered
-Any alternative approaches you've considered?
-
-## 🎮 Game Affected (if applicable)
-- [ ] Ludo Royale AI
-- [ ] New game (please specify): ___
-- [ ] Platform / UI
-- [ ] AI system
-
-## 📸 Mockups / References
-Attach any mockups, screenshots, or references that illustrate your idea.
-
-## 📋 Additional Context
-Any other context or notes here.
+**Additional context**
+Add any other context or screenshots about the feature request here.
