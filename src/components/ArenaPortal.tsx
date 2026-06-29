@@ -142,7 +142,7 @@ export default function ArenaPortal({ onSelectGame }: ArenaPortalProps) {
             alignItems: 'center',
             gap: '12px'
           }}>
-            <span>🎮</span> ZynoArena <span style={{
+            <span>🎮</span> OpenBoard Arcade <span style={{
               fontSize: '11px',
               fontFamily: "'Chakra Petch', monospace",
               padding: '3px 8px',
@@ -357,7 +357,7 @@ export default function ArenaPortal({ onSelectGame }: ArenaPortalProps) {
         color: '#475569',
         fontSize: '12px'
       }}>
-        <p style={{ margin: 0 }}>ZynoArena Game Launcher · Local Host Dashboard</p>
+        <p style={{ margin: 0 }}>OpenBoard Arcade Game Launcher · Local Host Dashboard</p>
       </footer>
     </div>
   );

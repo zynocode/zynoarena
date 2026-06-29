@@ -1,6 +1,6 @@
-# 🤝 Contributing to ZynoArena
+# 🤝 Contributing to OpenBoard Arcade
 
-Thank you for your interest in contributing to **ZynoArena**! We love contributions of all kinds — bug fixes, new games, UI improvements, AI enhancements, or even documentation.
+Thank you for your interest in contributing to **OpenBoard Arcade**! We love contributions of all kinds — bug fixes, new games, UI improvements, AI enhancements, or even documentation.
 
 ---
 
@@ -26,8 +26,8 @@ Be respectful, inclusive, and constructive. We follow the [Contributor Covenant]
 
 ```bash
 # Fork and clone the repo
-git clone https://github.com/<your-username>/zynoarena.git
-cd zynoarena
+git clone https://github.com/<your-username>/openboard-arcade.git
+cd openboard-arcade
 
 # Install dependencies
 npm install
@@ -43,11 +43,11 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 ## 🛠️ How to Contribute
 
 ### 🐛 Bug Reports
-- Use the [Bug Report](https://github.com/zynocode/zynoarena/issues/new?labels=bug) issue template
+- Use the [Bug Report](https://github.com/zynocode/openboard-arcade/issues/new?labels=bug) issue template
 - Include steps to reproduce, browser/OS info, and screenshots if possible
 
 ### 💡 Feature Requests
-- Use the [Feature Request](https://github.com/zynocode/zynoarena/issues/new?labels=enhancement) issue template
+- Use the [Feature Request](https://github.com/zynocode/openboard-arcade/issues/new?labels=enhancement) issue template
 - Describe the feature, why it's useful, and any design ideas
 
 ### 🔧 Code Contributions
@@ -135,7 +135,7 @@ PRs are merged via **Squash and Merge** to keep a clean history.
 
 ## 💬 Questions?
 
-Open a [GitHub Discussion](https://github.com/zynocode/zynoarena/discussions) or reach out via [zynocode](https://github.com/zynocode).
+Open a [GitHub Discussion](https://github.com/zynocode/openboard-arcade/discussions) or reach out via [zynocode](https://github.com/zynocode).
 
 ---
 

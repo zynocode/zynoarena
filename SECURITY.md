@@ -9,12 +9,12 @@
 
 ## 🛡️ Reporting a Vulnerability
 
-We take security seriously. If you discover a security vulnerability in ZynoArena, **please do NOT open a public GitHub issue**.
+We take security seriously. If you discover a security vulnerability in OpenBoard Arcade, **please do NOT open a public GitHub issue**.
 
 ### How to Report
 
-1. **Email**: Open a [private security advisory](https://github.com/zynocode/zynoarena/security/advisories/new) on GitHub (recommended)
-2. **Or**: Contact us via [GitHub Discussions](https://github.com/zynocode/zynoarena/discussions)
+1. **Email**: Open a [private security advisory](https://github.com/zynocode/openboard-arcade/security/advisories/new) on GitHub (recommended)
+2. **Or**: Contact us via [GitHub Discussions](https://github.com/zynocode/openboard-arcade/discussions)
 
 ### What to Include
 
@@ -32,7 +32,7 @@ We take security seriously. If you discover a security vulnerability in ZynoAren
 
 ## 🔐 Scope
 
-Since ZynoArena is a **client-side only browser game** with no backend, server, or user data storage, the attack surface is limited. Key areas of concern:
+Since OpenBoard Arcade is a **client-side only browser game** with no backend, server, or user data storage, the attack surface is limited. Key areas of concern:
 
 - XSS vulnerabilities in the game UI
 - Supply chain attacks via npm dependencies
@@ -46,4 +46,4 @@ Since ZynoArena is a **client-side only browser game** with no backend, server, 
 
 ---
 
-Thank you for helping keep ZynoArena safe! 🙏
+Thank you for helping keep OpenBoard Arcade safe! 🙏

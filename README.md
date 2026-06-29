@@ -1,24 +1,24 @@
-# 🎮 ZynoArena
+# 🎮 OpenBoard Arcade
 
 <div align="center">
 
-[![ZynoArena](https://img.shields.io/badge/ZynoArena-Browser%20Games-blueviolet?style=for-the-badge&logo=gamepad&logoColor=white)](https://github.com/zynocode/zynoarena)
-[![Version](https://img.shields.io/github/v/release/zynocode/zynoarena?style=for-the-badge&color=brightgreen&label=version)](https://github.com/zynocode/zynoarena/releases)
+[![OpenBoard Arcade](https://img.shields.io/badge/OpenBoard%20Arcade-Browser%20Games-blueviolet?style=for-the-badge&logo=gamepad&logoColor=white)](https://github.com/zynocode/openboard-arcade)
+[![Version](https://img.shields.io/github/v/release/zynocode/openboard-arcade?style=for-the-badge&color=brightgreen&label=version)](https://github.com/zynocode/openboard-arcade/releases)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/zynocode/zynoarena?style=for-the-badge&color=yellow)](https://github.com/zynocode/zynoarena/stargazers)
+[![Stars](https://img.shields.io/github/stars/zynocode/openboard-arcade?style=for-the-badge&color=yellow)](https://github.com/zynocode/openboard-arcade/stargazers)
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8.x-646cff?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Phaser](https://img.shields.io/badge/Phaser-4.x-orange?style=flat-square&logo=phaser&logoColor=white)](https://phaser.io/)
-[![Open Issues](https://img.shields.io/github/issues/zynocode/zynoarena?style=flat-square)](https://github.com/zynocode/zynoarena/issues)
-[![Last Commit](https://img.shields.io/github/last-commit/zynocode/zynoarena?style=flat-square)](https://github.com/zynocode/zynoarena/commits/main)
+[![Open Issues](https://img.shields.io/github/issues/zynocode/openboard-arcade?style=flat-square)](https://github.com/zynocode/openboard-arcade/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/zynocode/openboard-arcade?style=flat-square)](https://github.com/zynocode/openboard-arcade/commits/main)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 
 **An open-source collection of modern, AI-powered browser games.**
 Play offline. No accounts. No installs. Just open and play.
 
-[🕹️ Play Now →](https://github.com/zynocode/zynoarena) &nbsp;·&nbsp; [🐛 Report Bug](https://github.com/zynocode/zynoarena/issues/new?labels=bug) &nbsp;·&nbsp; [💡 Request Feature](https://github.com/zynocode/zynoarena/issues/new?labels=enhancement) &nbsp;·&nbsp; [🤝 Contribute](CONTRIBUTING.md)
+[🕹️ Play Now →](https://github.com/zynocode/openboard-arcade) &nbsp;·&nbsp; [🐛 Report Bug](https://github.com/zynocode/openboard-arcade/issues/new?labels=bug) &nbsp;·&nbsp; [💡 Request Feature](https://github.com/zynocode/openboard-arcade/issues/new?labels=enhancement) &nbsp;·&nbsp; [🤝 Contribute](CONTRIBUTING.md)
 
 </div>
 
@@ -108,8 +108,8 @@ Build        →  Vite + Rolldown
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/zynocode/zynoarena.git
-cd zynoarena
+git clone https://github.com/zynocode/openboard-arcade.git
+cd openboard-arcade
 
 # 2. Install dependencies
 npm install
@@ -163,7 +163,7 @@ The engine returns the **highest-scoring legal move** deterministically (no RNG 
 ## 📁 Project Structure
 
 ```
-zynoarena/
+openboard-arcade/
 ├── public/                  # Static assets
 ├── src/
 │   ├── assets/              # Images, icons, audio (.ogg)
@@ -219,7 +219,7 @@ You are free to use, modify, and distribute this code — just keep the attribut
 - [React](https://react.dev/) — UI component library
 - [Zustand](https://github.com/pmndrs/zustand) — Lightweight state management
 - [Vite](https://vitejs.dev/) — Lightning-fast build tooling
-- All [contributors](https://github.com/zynocode/zynoarena/graphs/contributors) who make this project better ❤️
+- All [contributors](https://github.com/zynocode/openboard-arcade/graphs/contributors) who make this project better ❤️
 
 ---
 
@@ -229,8 +229,8 @@ Made with ❤️ by [zynocode](https://github.com/zynocode)
 
 ⭐ **Star this repo** if you find it useful — it helps us grow!
 
-[![GitHub Stars](https://img.shields.io/github/stars/zynocode/zynoarena?style=social)](https://github.com/zynocode/zynoarena/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/zynocode/zynoarena?style=social)](https://github.com/zynocode/zynoarena/network/members)
+[![GitHub Stars](https://img.shields.io/github/stars/zynocode/openboard-arcade?style=social)](https://github.com/zynocode/openboard-arcade/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/zynocode/openboard-arcade?style=social)](https://github.com/zynocode/openboard-arcade/network/members)
 [![Follow zynocode](https://img.shields.io/github/followers/zynocode?style=social&label=Follow%20zynocode)](https://github.com/zynocode)
 
 </div>
